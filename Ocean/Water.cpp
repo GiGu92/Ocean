@@ -8,14 +8,12 @@ Water::Water() { }
 
 void Water::LoadTextures(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
-	const wchar_t* diffuseTextureFile,
 	const wchar_t* normalTextureFile,
 	const wchar_t* environmentTextureFile)
 {
 	auto device = deviceResources->GetD3DDevice();
 
 	// Load textures
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, diffuseTextureFile, nullptr, diffuseTexture.ReleaseAndGetAddressOf()));
 	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, environmentTextureFile, nullptr, environmentTexture.ReleaseAndGetAddressOf()));
 	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, normalTextureFile, nullptr, normalTexture.ReleaseAndGetAddressOf()));
 	
@@ -32,10 +30,9 @@ void Water::LoadTextures(
 	device->CreateSamplerState(&sampDesc, &linearSampler);
 }
 
-void Water::LoadShaders(
+void Water::LoadVertexShader(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
-	const std::vector<byte>& vsFileData,
-	const std::vector<byte>& psFileData)
+	const std::vector<byte>& vsFileData)
 {
 	// Vertex Shader
 	DX::ThrowIfFailed(
@@ -66,8 +63,12 @@ void Water::LoadShaders(
 			&inputLayout
 			)
 		);
+}
 
-	// Pixel Shader
+void Water::LoadPixelShader(
+	std::shared_ptr<DX::DeviceResources> deviceResources,
+	const std::vector<byte>& psFileData)
+{
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreatePixelShader(
 			&psFileData[0],
@@ -78,10 +79,10 @@ void Water::LoadShaders(
 		);
 }
 
-void Water::LoadConstantBuffers(
+void Water::CreateConstantBuffers(
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 {
-	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(VertexPositionNormalTextureTangentBinormal), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(WaterConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateBuffer(
 			&vsConstantBufferDesc,
@@ -90,7 +91,7 @@ void Water::LoadConstantBuffers(
 			)
 		);
 
-	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(VertexPositionNormalTextureTangentBinormal), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(WaterConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateBuffer(
 			&psConstantBufferDesc,
@@ -171,9 +172,8 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 			vsConstantBuffer.GetAddressOf()
 			);
 
-		context->PSSetShaderResources(0, 1, diffuseTexture.GetAddressOf());
+		context->PSSetShaderResources(0, 1, normalTexture.GetAddressOf());
 		context->PSSetShaderResources(1, 1, environmentTexture.GetAddressOf());
-		context->PSSetShaderResources(2, 1, normalTexture.GetAddressOf());
 		context->PSSetSamplers(0, 1, linearSampler.GetAddressOf());
 
 		// Draw the objects.
@@ -183,4 +183,16 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 			0
 			);
 	}
+}
+
+Water::~Water()
+{
+	vertexShader.Reset();
+	pixelShader.Reset();
+	vsConstantBuffer.Reset();
+	psConstantBuffer.Reset();
+	inputLayout.Reset();
+	environmentTexture.Reset();
+	normalTexture.Reset();
+	linearSampler.Reset();
 }

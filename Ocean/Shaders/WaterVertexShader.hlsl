@@ -44,49 +44,12 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 posOS = float4(input.posOS, 1.0f);
 
-	// Calculate waves
-	float4 SpaceFreq = float4(3.5f, 0.0f, 3.5f, 0.0f);
-	float4 TimeFreq = float4(1.4f, 0.0f, 1.4f, 0.0f);
-	float4 Amplitudes = float4(0.08f, 0.0f, 0.16f, 0.0f);
-	float4 WaveDirX = float4(-0.5f, 0.0f, 0.1f, 0.0f);
-	float4 WaveDirZ = float4(0.7f, 0.0f, 0.5f, 0.0f);
-	float Time = totalTime.x;
-	float4 Phase = (WaveDirX * posOS.x + WaveDirZ * posOS.z) * SpaceFreq + Time * TimeFreq;
-	float4 Cos, Sin;
-	sincos(Phase, Sin, Cos);
-	float WaveHeight = dot(Sin, Amplitudes);
+	float4x4 MVP = mul(mul(model, view), projection);
 
-	posOS.y += WaveHeight;
-
-	float4 CosWaveHeight = WaveHeight * SpaceFreq * Cos;
-	float3 tangentOS = float3(0, dot(CosWaveHeight, WaveDirZ), 1);
-	float3 binormalOS = float3(1, dot(CosWaveHeight, WaveDirX), 0);
-	float3 normalOS = cross(tangentOS, binormalOS);
-
-	// Transform the vertex position into projected space.
-	float4x4 worldviewproj = mul(mul(projection, view), model);
-	output.posPS = mul(worldviewproj, posOS);
-
-	// Pass normal and texcoord through
-	float3 normalWS = normalize(mul(model, normalOS));
-	output.normalWS = normalWS;
+	output.posPS = mul(posOS, MVP);
+	output.posWS = mul(posOS, model).xyz;
+	output.normalWS = mul(input.normalOS, (float3x3)model);
 	output.texCoord = input.texCoord;
-
-	// Calculate world position
-	float4 posWS = mul(model, posOS);
-
-	output.posWS = posWS.xyz;
-
-	// Calculate tangent basis
-	float3 tangentWS = normalize(mul(model, tangentOS));
-	float3 binormalWS = normalize(mul(model, binormalOS));
-	float3x3 WorldToTangent = transpose(float3x3(tangentWS, binormalWS, normalWS));
-	
-	// Calculate tangent space view and light vectors
-	float3 lightWS = normalize(lightPos.xyz - posWS.xyz);
-	output.lightTS = mul(WorldToTangent, lightWS).yxz;
-	float3 viewWS = normalize(cameraPos.xyz - posWS.xyz);
-	output.viewTS = mul(WorldToTangent, viewWS);
 
 	return output;
 }

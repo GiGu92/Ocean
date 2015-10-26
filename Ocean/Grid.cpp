@@ -3,7 +3,7 @@
 
 Grid::Grid() { }
 
-void Grid::GenerateSimpleMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, int stride)
+void Grid::GenerateSimpleMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float stride)
 {
 	UINT vbSize = (width + 1) * (height + 1);
 	VertexPositionNormalTextureTangentBinormal* planeVertices = new VertexPositionNormalTextureTangentBinormal[vbSize];
@@ -64,7 +64,13 @@ void Grid::GenerateSimpleMesh(std::shared_ptr<DX::DeviceResources> deviceResourc
 		);
 }
 
-void Grid::GenerateProjectedMesh(std::shared_ptr<DX::DeviceResources> deviceResources, Camera camera, int stride)
+void Grid::GenerateProjectedMesh(std::shared_ptr<DX::DeviceResources> deviceResources, Camera camera, float stride)
 {
 
+}
+
+Grid::~Grid()
+{
+	vertexBuffer.Reset();
+	indexBuffer.Reset();
 }

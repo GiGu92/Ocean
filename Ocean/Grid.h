@@ -8,8 +8,9 @@ class Grid
 {
 public:
 	Grid();
-	void GenerateSimpleMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, int stride = 1);
-	void GenerateProjectedMesh(std::shared_ptr<DX::DeviceResources> deviceResources, Camera camera, int stride = 1);
+	void GenerateSimpleMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float stride = 1.f);
+	void GenerateProjectedMesh(std::shared_ptr<DX::DeviceResources> deviceResources, Camera camera, float stride = 1.f);
+	~Grid();
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;

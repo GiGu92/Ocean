@@ -65,6 +65,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{d2a46393-e572-4199-8128-198f50f4b7a7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Assets\Textures">
+      <UniqueIdentifier>{863ff337-f733-4e78-91c2-5b4fba17e633}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
@@ -103,6 +106,12 @@
   <ItemGroup>
     <Image Include="Assets\StoreLogo.png">
       <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\Textures\skybox.dds">
+      <Filter>Assets\Textures</Filter>
+    </Image>
+    <Image Include="Assets\Textures\water_normal.dds">
+      <Filter>Assets\Textures</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
