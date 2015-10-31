@@ -101,6 +101,42 @@ void Water::CreateConstantBuffers(
 		);
 }
 
+void Water::CreateIndexBuffer(
+	std::shared_ptr<DX::DeviceResources> deviceResources,
+	std::shared_ptr<std::vector<unsigned int>> indices)
+{
+	D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+	indexBufferData.pSysMem = &indices.get()[0];
+	indexBufferData.SysMemPitch = 0;
+	indexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned int) * indices->size(), D3D11_BIND_INDEX_BUFFER);
+	DX::ThrowIfFailed(
+		deviceResources->GetD3DDevice()->CreateBuffer(
+			&indexBufferDesc,
+			&indexBufferData,
+			&indexBuffer
+			)
+		);
+}
+
+void Water::CreateVertexBuffer(
+	std::shared_ptr<DX::DeviceResources> deviceResources,
+	std::shared_ptr<std::vector<VertexPositionNormalTextureTangentBinormal>> vertices)
+{
+	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+	vertexBufferData.pSysMem = &vertices.get()[0];
+	vertexBufferData.SysMemPitch = 0;
+	vertexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionNormalTextureTangentBinormal) * vertices->size(), D3D11_BIND_VERTEX_BUFFER);
+	DX::ThrowIfFailed(
+		deviceResources->GetD3DDevice()->CreateBuffer(
+			&vertexBufferDesc,
+			&vertexBufferData,
+			&vertexBuffer
+			)
+		);
+}
+
 void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 {
 	{

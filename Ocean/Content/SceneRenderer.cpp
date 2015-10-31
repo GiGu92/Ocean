@@ -23,7 +23,7 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 	m_water = std::shared_ptr<Water>(new Water());
 
 	m_camera = std::shared_ptr<Camera>(new Camera(
-		XMFLOAT4(1.0f, 3.f, 5.f, 0.0f),
+		XMFLOAT4(1.0f, 5.f, 5.f, 0.0f),
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
@@ -59,7 +59,7 @@ void SceneRenderer::Render()
 	context->OMSetRenderTargets(1, targets, m_deviceResources->GetDepthStencilView());
 	
 	context->RSSetState(m_states->Wireframe());
-	//context->RSSetState(m_states->CullNone());
+	//context->RSSetState(m_states->CullCounterClockwise());
 	context->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
 	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
 	m_water->Draw(m_deviceResources);
@@ -86,7 +86,8 @@ void SceneRenderer::CreateDeviceDependentResources()
 
 	// Once both shaders are loaded, create the mesh.
 	auto createWaterMeshTask = (createWaterVSTask && createWaterPSTask).then([this] () {
-		m_water->GenerateSimpleMesh(m_deviceResources, 100, 100, .2f);
+		//m_water->GenerateSimpleMesh(m_deviceResources, 100, 100, .2f);
+		m_water->GenerateProjectedMesh(m_deviceResources, 100, 100, m_camera);
 		m_water->LoadTextures(m_deviceResources, L"assets/textures/water_normal.dds", L"assets/textures/skybox.dds");
 	});
 

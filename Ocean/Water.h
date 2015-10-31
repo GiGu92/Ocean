@@ -2,6 +2,7 @@
 
 #include "Content\ShaderStructures.h"
 #include "Grid.h"
+#include <vector>
 
 using namespace Ocean;
 
@@ -21,6 +22,12 @@ public:
 		const std::vector<byte>& psFileData);
 	void CreateConstantBuffers(
 		std::shared_ptr<DX::DeviceResources> deviceResources);
+	void CreateIndexBuffer(
+		std::shared_ptr<DX::DeviceResources> deviceResources,
+		std::shared_ptr<std::vector<unsigned int>> indices);
+	void CreateVertexBuffer(
+		std::shared_ptr<DX::DeviceResources> deviceResources,
+		std::shared_ptr<std::vector<VertexPositionNormalTextureTangentBinormal>> vertices);
 	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 	~Water();
 

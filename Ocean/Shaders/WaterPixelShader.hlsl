@@ -37,5 +37,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 {
 	float4 color = float4(1,1,1,1);
 
+	//color = mul(float4(input.posWS, 1), mul(view, projection));
+	//color /= color.w;
 	return color;
 }

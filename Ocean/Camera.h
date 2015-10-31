@@ -30,14 +30,15 @@ public:
 
 	~Camera();
 
-private:
-	XMFLOAT4 eye;
-	XMFLOAT4 at;
-	XMFLOAT4 up;
 	float fov;
 	float aspectRatio;
 	float nearClippingPane;
 	float farClippingPane;
+
+private:
+	XMFLOAT4 eye;
+	XMFLOAT4 at;
+	XMFLOAT4 up;
 
 	float movementSpeed;
 	XMFLOAT4 movementDir;

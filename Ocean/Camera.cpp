@@ -75,12 +75,12 @@ void Camera::ProcessInput(DX::StepTimer const& timer, std::shared_ptr<DX::Device
 		md += right;
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::Space) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::E) == CoreVirtualKeyStates::Down)
 	{
 		md += this->getUp();
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::Control) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::Q) == CoreVirtualKeyStates::Down)
 	{
 		md += -this->getUp();
 	}
