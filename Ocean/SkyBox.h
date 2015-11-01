@@ -1,19 +1,14 @@
 #pragma once
-
-#include "Content\ShaderStructures.h"
 #include "GeneratedMesh.h"
-#include <vector>
 
-using namespace Ocean;
-
-class Water : public GeneratedMesh
+class SkyBox : public GeneratedMesh
 {
 public:
-	Water();
+	SkyBox();
+
 	void LoadTextures(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
-		const wchar_t* normalTextureFile,
-		const wchar_t* environmentTextureFile);
+		const wchar_t* diffuseTextureFile);
 	void LoadVertexShader(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
 		const std::vector<byte>& vsFileData);
@@ -23,10 +18,10 @@ public:
 	void CreateConstantBuffers(
 		std::shared_ptr<DX::DeviceResources> deviceResources);
 	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
-	~Water();
 
-	WaterConstantBuffer                                vsConstantBufferData;
-	WaterConstantBuffer                                psConstantBufferData;
+	~SkyBox();
+
+	ModelViewProjectionConstantBuffer vsConstantBufferData;
 
 protected:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>         vertexShader;
@@ -34,9 +29,7 @@ protected:
 	Microsoft::WRL::ComPtr<ID3D11Buffer>               vsConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>               psConstantBuffer;
 	Microsoft::WRL::ComPtr<ID3D11InputLayout>          inputLayout;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   environmentTexture;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   normalTexture;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   diffuseTexture;
 	Microsoft::WRL::ComPtr<ID3D11SamplerState>         linearSampler;
-
 };
 

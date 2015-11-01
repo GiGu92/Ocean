@@ -1,9 +1,92 @@
 #include "pch.h"
-#include "Grid.h"
+#include "GeneratedMesh.h"
 
-Grid::Grid() { }
+GeneratedMesh::GeneratedMesh() { }
 
-void Grid::GenerateSimpleMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float stride)
+void GeneratedMesh::GenerateSphereMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int latitudeBands, int longitudeBands, float radius)
+{
+	float PI;
+	XMStoreFloat(&PI, g_XMPi);
+
+	std::vector<VertexPositionNormalTextureTangentBinormal> verticesVector;
+	std::vector<unsigned int> indicesVector;
+
+	//float latitudeBands = 30;
+	//float longitudeBands = 30;
+	//float radius = 0.5f;
+
+	for (int latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+		float theta = (float)latNumber * PI / (float)latitudeBands;
+		float sinTheta = sin(theta);
+		float cosTheta = cos(theta);
+
+		for (int longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+			float phi = (float)longNumber * 2 * PI / longitudeBands;
+			float sinPhi = sin(phi);
+			float cosPhi = cos(phi);
+
+			VertexPositionNormalTextureTangentBinormal vs;
+			vs.normal = XMFLOAT3(cosPhi * sinTheta, cosTheta, sinPhi * sinTheta);
+			vs.position = XMFLOAT3(radius * vs.normal.x, radius * vs.normal.y, radius * vs.normal.z);
+			vs.textureCoordinate = XMFLOAT2((float)latNumber / (float)latitudeBands, (float)longNumber / (float)longitudeBands);
+			// TODO: calculate correct tangent and binormal vectors
+			vs.tangent = XMFLOAT3();
+			vs.binormal = XMFLOAT3();
+
+			verticesVector.push_back(vs);
+		}
+
+		for (int latNumber = 0; latNumber < latitudeBands; latNumber++) {
+			for (int longNumber = 0; longNumber < longitudeBands; longNumber++) {
+				unsigned int first = (latNumber * (longitudeBands + 1)) + longNumber;
+				unsigned int second = first + longitudeBands + 1;
+
+				indicesVector.push_back(first);
+				indicesVector.push_back(second);
+				indicesVector.push_back(first + 1);
+
+				indicesVector.push_back(second);
+				indicesVector.push_back(second + 1);
+				indicesVector.push_back(first + 1);
+
+			}
+		}
+	}
+
+	VertexPositionNormalTextureTangentBinormal* vertices = &verticesVector[0];
+	unsigned int* indices = &indicesVector[0];
+
+
+	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+	vertexBufferData.pSysMem = vertices;
+	vertexBufferData.SysMemPitch = 0;
+	vertexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionNormalTextureTangentBinormal) * verticesVector.size(), D3D11_BIND_VERTEX_BUFFER);
+	DX::ThrowIfFailed(
+		deviceResources->GetD3DDevice()->CreateBuffer(
+			&vertexBufferDesc,
+			&vertexBufferData,
+			&vertexBuffer
+			)
+		);
+
+	indexCount = indicesVector.size();
+
+	D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+	indexBufferData.pSysMem = indices;
+	indexBufferData.SysMemPitch = 0;
+	indexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned int) * indicesVector.size(), D3D11_BIND_INDEX_BUFFER);
+	DX::ThrowIfFailed(
+		deviceResources->GetD3DDevice()->CreateBuffer(
+			&indexBufferDesc,
+			&indexBufferData,
+			&indexBuffer
+			)
+		);
+}
+
+void GeneratedMesh::GenerateSimpleGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float stride)
 {
 	UINT vbSize = (width + 1) * (height + 1);
 	VertexPositionNormalTextureTangentBinormal* planeVertices = new VertexPositionNormalTextureTangentBinormal[vbSize];
@@ -73,7 +156,7 @@ XMVECTOR LinePlaneIntersection(XMVECTOR linePoint1, XMVECTOR linePoint2, XMVECTO
 	return linePoint1 + (((planeDistanceFromOrigin - nDotA) / nDotLine) * line);
 }
 
-void Grid::GenerateProjectedMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, std::shared_ptr<Camera> camera)
+void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, std::shared_ptr<Camera> camera)
 {
 	XMVECTOR screenCenter = camera->getEye() + camera->getDirection() * camera->nearClippingPane;
 	float screenHeight = 2 * camera->nearClippingPane * tanf(camera->fov / 2.f);
@@ -159,7 +242,7 @@ void Grid::GenerateProjectedMesh(std::shared_ptr<DX::DeviceResources> deviceReso
 		);
 }
 
-Grid::~Grid()
+GeneratedMesh::~GeneratedMesh()
 {
 	vertexBuffer.Reset();
 	indexBuffer.Reset();

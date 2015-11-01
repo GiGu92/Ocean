@@ -205,7 +205,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Common\DeviceResources.h" />
     <ClInclude Include="Content\SceneRenderer.h" />
-    <ClInclude Include="Grid.h" />
+    <ClInclude Include="GeneratedMesh.h" />
     <ClInclude Include="OceanMain.h" />
     <ClInclude Include="Common\DirectXHelper.h" />
     <ClInclude Include="Common\StepTimer.h" />
@@ -213,6 +213,7 @@
     <ClInclude Include="Content\SampleFpsTextRenderer.h" />
     <ClInclude Include="Content\ShaderStructures.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="SkyBox.h" />
     <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
@@ -220,7 +221,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Common\DeviceResources.cpp" />
     <ClCompile Include="Content\SceneRenderer.cpp" />
-    <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="GeneratedMesh.cpp" />
     <ClCompile Include="OceanMain.cpp" />
     <ClCompile Include="Content\SampleFpsTextRenderer.cpp" />
     <ClCompile Include="Content\Sample3DSceneRenderer.cpp" />
@@ -232,6 +233,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="SkyBox.cpp" />
     <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>

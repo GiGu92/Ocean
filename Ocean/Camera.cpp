@@ -13,12 +13,12 @@ Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
 	this->fov = 70.0f * XM_PI / 180.0f;
 
 	this->nearClippingPane = 0.01f;
-	this->farClippingPane = 100.0f;
+	this->farClippingPane = 1000.0f;
 
 	XMFLOAT4X4 orientation = deviceResources->GetOrientationTransform3D();
 	this->sceneOrientation = orientation;
 
-	this->movementSpeed = 2.0f;
+	this->movementSpeed = 5.0f;
 	this->movementDir = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
@@ -83,6 +83,16 @@ void Camera::ProcessInput(DX::StepTimer const& timer, std::shared_ptr<DX::Device
 	if (window->GetAsyncKeyState(VirtualKey::Q) == CoreVirtualKeyStates::Down)
 	{
 		md += -this->getUp();
+	}
+
+	if (window->GetAsyncKeyState(VirtualKey::Shift) == CoreVirtualKeyStates::Down)
+	{
+		md *= 2;
+	}
+
+	if (window->GetAsyncKeyState(VirtualKey::Control) == CoreVirtualKeyStates::Down)
+	{
+		md *= .5;
 	}
 
 	this->setMovementDir(md);

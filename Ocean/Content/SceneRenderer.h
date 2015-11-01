@@ -6,8 +6,9 @@
 
 #include "CommonStates.h"
 
-#include "Water.h"
 #include "Camera.h"
+#include "Water.h"
+#include "SkyBox.h"
 
 namespace Ocean
 {
@@ -29,6 +30,7 @@ namespace Ocean
 		// Scene resources
 		std::shared_ptr<Camera> m_camera;
 		std::shared_ptr<Water> m_water;
+		std::shared_ptr<SkyBox> m_skybox;
 		
 
 		// Variables used with the rendering loop.

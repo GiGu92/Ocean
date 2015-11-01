@@ -1,22 +1,20 @@
 #include "pch.h"
-#include "Water.h"
+#include "SkyBox.h"
+
 #include "DDSTextureLoader.h"
 
-using namespace Windows::Foundation;
 
-Water::Water() { }
+SkyBox::SkyBox() { }
 
-void Water::LoadTextures(
-	std::shared_ptr<DX::DeviceResources> deviceResources,
-	const wchar_t* normalTextureFile,
-	const wchar_t* environmentTextureFile)
+void SkyBox::LoadTextures(
+		std::shared_ptr<DX::DeviceResources> deviceResources,
+		const wchar_t* diffuseTextureFile)
 {
 	auto device = deviceResources->GetD3DDevice();
 
 	// Load textures
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, environmentTextureFile, nullptr, environmentTexture.ReleaseAndGetAddressOf()));
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, normalTextureFile, nullptr, normalTexture.ReleaseAndGetAddressOf()));
-	
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, diffuseTextureFile, nullptr, diffuseTexture.ReleaseAndGetAddressOf()));
+
 	// Create samplers
 	D3D11_SAMPLER_DESC sampDesc;
 	ZeroMemory(&sampDesc, sizeof(sampDesc));
@@ -30,7 +28,7 @@ void Water::LoadTextures(
 	device->CreateSamplerState(&sampDesc, &linearSampler);
 }
 
-void Water::LoadVertexShader(
+void SkyBox::LoadVertexShader(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
 	const std::vector<byte>& vsFileData)
 {
@@ -65,7 +63,7 @@ void Water::LoadVertexShader(
 		);
 }
 
-void Water::LoadPixelShader(
+void SkyBox::LoadPixelShader(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
 	const std::vector<byte>& psFileData)
 {
@@ -79,10 +77,10 @@ void Water::LoadPixelShader(
 		);
 }
 
-void Water::CreateConstantBuffers(
+void SkyBox::CreateConstantBuffers(
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 {
-	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(WaterConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateBuffer(
 			&vsConstantBufferDesc,
@@ -90,19 +88,11 @@ void Water::CreateConstantBuffers(
 			&vsConstantBuffer
 			)
 		);
-
-	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(WaterConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
-	DX::ThrowIfFailed(
-		deviceResources->GetD3DDevice()->CreateBuffer(
-			&psConstantBufferDesc,
-			nullptr,
-			&psConstantBuffer
-			)
-		);
 }
 
-void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
+void SkyBox::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 {
+
 	auto device = deviceResources->GetD3DDevice();
 	auto context = deviceResources->GetD3DDeviceContext();
 
@@ -111,14 +101,6 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 		0,
 		NULL,
 		&vsConstantBufferData,
-		0,
-		0);
-
-	context->UpdateSubresource(
-		psConstantBuffer.Get(),
-		0,
-		NULL,
-		&psConstantBufferData,
 		0,
 		0);
 
@@ -163,16 +145,7 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 		0
 		);
 
-	// Send the constant buffer to the graphics device.
-	context->PSSetConstantBuffers(
-		0,
-		1,
-		//psConstantBuffer.GetAddressOf()
-		vsConstantBuffer.GetAddressOf()
-		);
-
-	context->PSSetShaderResources(0, 1, normalTexture.GetAddressOf());
-	context->PSSetShaderResources(1, 1, environmentTexture.GetAddressOf());
+	context->PSSetShaderResources(0, 1, diffuseTexture.GetAddressOf());
 	context->PSSetSamplers(0, 1, linearSampler.GetAddressOf());
 
 	// Draw the objects.
@@ -183,14 +156,13 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 		);
 }
 
-Water::~Water()
+SkyBox::~SkyBox()
 {
 	vertexShader.Reset();
 	pixelShader.Reset();
 	vsConstantBuffer.Reset();
 	psConstantBuffer.Reset();
 	inputLayout.Reset();
-	environmentTexture.Reset();
-	normalTexture.Reset();
+	diffuseTexture.Reset();
 	linearSampler.Reset();
 }

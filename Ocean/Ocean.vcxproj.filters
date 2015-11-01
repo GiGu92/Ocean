@@ -79,10 +79,13 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Content</Filter>
     </ClCompile>
-    <ClCompile Include="Grid.cpp">
+    <ClCompile Include="Water.cpp">
       <Filter>Content</Filter>
     </ClCompile>
-    <ClCompile Include="Water.cpp">
+    <ClCompile Include="GeneratedMesh.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="SkyBox.cpp">
       <Filter>Content</Filter>
     </ClCompile>
   </ItemGroup>
@@ -96,10 +99,13 @@
     <ClInclude Include="Camera.h">
       <Filter>Content</Filter>
     </ClInclude>
-    <ClInclude Include="Grid.h">
+    <ClInclude Include="Water.h">
       <Filter>Content</Filter>
     </ClInclude>
-    <ClInclude Include="Water.h">
+    <ClInclude Include="GeneratedMesh.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyBox.h">
       <Filter>Content</Filter>
     </ClInclude>
   </ItemGroup>

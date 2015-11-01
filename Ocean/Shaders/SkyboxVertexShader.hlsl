@@ -32,11 +32,9 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 pos = float4(input.pos, 1.0f);
 
-	float4x4 worldviewproj = mul(mul(projection, view), model);
-	output.pos = mul(worldviewproj, pos);
-
-	float4 worldPos = mul(model, pos);
-		output.texCoord = input.pos;
+	float4x4 MVP = mul(model, mul(view, projection));
+	output.pos = mul(pos, MVP);
+	output.texCoord = input.pos;
 
 	return output;
 }
