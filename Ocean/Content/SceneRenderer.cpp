@@ -24,7 +24,7 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 	m_skybox = std::shared_ptr<SkyBox>(new SkyBox());
 
 	m_camera = std::shared_ptr<Camera>(new Camera(
-		XMFLOAT4(1.0f, 5.f, 5.f, 0.0f),
+		XMFLOAT4(1.0f, 2.f, 5.f, 0.0f),
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
@@ -33,6 +33,7 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, m_camera->getProjection());
 	m_water->vsConstantBufferData.lightPos = XMFLOAT4(1000.f, 500.f, 0.f, 1.f);
 	m_water->vsConstantBufferData.lightColor = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
+	m_water->vsConstantBufferData.uvWaveSpeed = XMFLOAT4(.4f, -.5f, -.7f, .3f);
 	
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, m_camera->getProjection());
 }
@@ -42,8 +43,13 @@ void SceneRenderer::Update(DX::StepTimer const& timer)
 {
 	m_camera->Update(timer, m_deviceResources);
 
+	int gridHeight = 50;
+	m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, m_camera);
+
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.view, m_camera->getView());
 	XMStoreFloat4(&m_water->vsConstantBufferData.cameraPos, m_camera->getEye());
+	float totalTime = timer.GetTotalSeconds();
+	m_water->vsConstantBufferData.totalTime = XMFLOAT4(totalTime, totalTime, totalTime, totalTime);
 	
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.model, XMMatrixTranspose(XMMatrixScaling(500.f, 500.f, 500.f) * XMMatrixTranslationFromVector(m_camera->getEye())));
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.view, m_camera->getView());
@@ -67,8 +73,8 @@ void SceneRenderer::Render()
 	context->RSSetState(m_states->CullClockwise());
 	m_skybox->Draw(m_deviceResources);
 	
-	context->RSSetState(m_states->Wireframe());
-	//context->RSSetState(m_states->CullCounterClockwise());
+	//context->RSSetState(m_states->Wireframe());
+	context->RSSetState(m_states->CullCounterClockwise());
 	context->OMSetBlendState(m_states->AlphaBlend(), nullptr, 0xFFFFFFFF);
 	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
 	m_water->Draw(m_deviceResources);
@@ -94,7 +100,8 @@ void SceneRenderer::CreateDeviceDependentResources()
 
 	auto createWaterMeshTask = (createWaterVSTask && createWaterPSTask).then([this] () {
 		//m_water->GenerateSimpleGridMesh(m_deviceResources, 100, 100, .2f);
-		m_water->GenerateProjectedGridMesh(m_deviceResources, 10, 10, m_camera);
+		int gridHeight = 10;
+		m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, m_camera);
 		m_water->LoadTextures(m_deviceResources, L"assets/textures/water_normal.dds", L"assets/textures/skybox.dds");
 	});
 

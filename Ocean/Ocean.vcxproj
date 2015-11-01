@@ -198,6 +198,7 @@
     <Image Include="Assets\StoreLogo.png" />
     <Image Include="Assets\Textures\skybox.dds" />
     <Image Include="Assets\Textures\water_normal.dds" />
+    <Image Include="Assets\Textures\water_normal2.dds" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>

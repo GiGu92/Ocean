@@ -21,6 +21,7 @@ namespace Ocean
 		XMFLOAT4 lightPos;
 		XMFLOAT4 lightColor;
 		XMFLOAT4 totalTime;
+		XMFLOAT4 uvWaveSpeed;
 	};
 
 

@@ -15,6 +15,7 @@ cbuffer MyConstantBuffer : register(b0)
 	float4 lightPos;
 	float4 lightColor;
 	float4 totalTime;
+	float4 uvWaveSpeed;
 };
 
 // Per-vertex data used as input to the vertex shader.
@@ -33,7 +34,8 @@ struct PixelShaderInput
 	float4 posPS : SV_Position;
 	float3 posWS : POSITION;
 	float3 normalWS : NORMAL;
-	float2 texCoord : TEXCOORD0;
+	float2 normalUV1 : TEXCOORD0;
+	float2 normalUV2 : TEXCOORD1;
 	float3 viewTS : VIEWVECTORS;
 	float3 lightTS : LIGHTVECTORS;
 };
@@ -49,7 +51,8 @@ PixelShaderInput main(VertexShaderInput input)
 	output.posPS = mul(posOS, MVP);
 	output.posWS = mul(posOS, model).xyz;
 	output.normalWS = mul(input.normalOS, (float3x3)model);
-	output.texCoord = input.texCoord;
+	output.normalUV1 = input.texCoord + uvWaveSpeed.xy * totalTime.x / 100.f;
+	output.normalUV2 = input.texCoord + uvWaveSpeed.zw * totalTime.x / 100.f;
 
 	return output;
 }

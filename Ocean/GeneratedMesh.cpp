@@ -174,10 +174,10 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 	XMVECTOR planeNormal = XMVectorSet(0, 1, 0, 1);
 	float planeDistanceFromOrigin = 0;
 
-	UINT vbSize = (width + 1) * (height + 1);
-	VertexPositionNormalTextureTangentBinormal* planeVertices = new VertexPositionNormalTextureTangentBinormal[vbSize];
+	std::vector<VertexPositionNormalTextureTangentBinormal> planeVerticesVector;
 	float epsilon = .001f;
-	int v = 0;
+	bool horizonReached = false;
+	int quadRows = -1;
 	for (float i = 0; i < 1.f + epsilon; i += 1.f / (float)height)
 	{
 		for (float j = 0; j < 1.f + epsilon; j += 1.f / (float)width)
@@ -187,23 +187,38 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 				XMVectorLerp(screenBottomRightCorner, screenTopRightCorner, i),
 				j);
 			XMVECTOR intersection = LinePlaneIntersection(eye, screenPosition, planeNormal, planeDistanceFromOrigin);
+			if (XMVectorGetX(XMVector3Dot(intersection - camera->getEye(), camera->getDirection())) < 0.f)
+			{
+				horizonReached = true;
+				break;
+			}
 			XMFLOAT3 position;
 			XMStoreFloat3(&position, intersection);
-			planeVertices[v] = VertexPositionNormalTextureTangentBinormal(
+			planeVerticesVector.push_back(VertexPositionNormalTextureTangentBinormal(
 				position,
 				XMFLOAT3(0.f, 1.f, 0.f),
-				XMFLOAT2(position.x, position.z),
+				XMFLOAT2(position.x / 20.f, position.z/ 20.f),
 				XMFLOAT3(1.f, 0.f, 0.f),
-				XMFLOAT3(0.f, 0.f, -1.f));
-			v++;
+				XMFLOAT3(0.f, 0.f, 1.f)));
 		}
+		if (horizonReached)
+			break;
+		
+		quadRows++;
+	}
+
+	if (planeVerticesVector.size() <= 0)
+	{
+		vertexBuffer = nullptr;
+		indexBuffer = nullptr;
+		return;
 	}
 
 	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
-	vertexBufferData.pSysMem = planeVertices;
+	vertexBufferData.pSysMem = &planeVerticesVector[0];
 	vertexBufferData.SysMemPitch = 0;
 	vertexBufferData.SysMemSlicePitch = 0;
-	CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionNormalTextureTangentBinormal) * vbSize, D3D11_BIND_VERTEX_BUFFER);
+	CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionNormalTextureTangentBinormal) * planeVerticesVector.size(), D3D11_BIND_VERTEX_BUFFER);
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateBuffer(
 			&vertexBufferDesc,
@@ -212,9 +227,9 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 			)
 		);
 
-	indexCount = width * height * 2 * 3;
+	indexCount = width * quadRows * 2 * 3;
 	unsigned int* planeIndices = new unsigned int[indexCount];
-	for (int z = 0; z < height; z++)
+	for (int z = 0; z < quadRows; z++)
 	{
 		for (int x = 0; x < width; x++)
 		{
