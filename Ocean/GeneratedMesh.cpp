@@ -185,6 +185,8 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 			XMVECTOR screenPosition = XMVectorLerp(
 				XMVectorLerp(screenBottomLeftCorner, screenTopLeftCorner, i),
 				XMVectorLerp(screenBottomRightCorner, screenTopRightCorner, i),
+				//XMVectorLerp(screenBottomLeftCorner + (-screenUp - screenRight), screenTopLeftCorner + (screenUp - screenRight), i),
+				//XMVectorLerp(screenBottomRightCorner + (-screenUp, + screenRight), screenTopRightCorner + (screenUp + screenRight), i),
 				j);
 			XMVECTOR intersection = LinePlaneIntersection(eye, screenPosition, planeNormal, planeDistanceFromOrigin);
 			if (XMVectorGetX(XMVector3Dot(intersection - camera->getEye(), camera->getDirection())) < 0.f)

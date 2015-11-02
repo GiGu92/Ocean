@@ -17,11 +17,15 @@ namespace Ocean
 	{
 	public:
 		SceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+		void InitializeScene();
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
 		void Update(DX::StepTimer const& timer);
+		void ProcessInput();
 		void Render();
+
+		bool m_wireframe = false;
 
 	private:
 		// Cached pointer to device resources.

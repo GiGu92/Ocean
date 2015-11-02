@@ -17,7 +17,7 @@ cbuffer MyConstantBuffer : register(b0)
 	matrix view;
 	matrix projection;
 	float4 cameraPos;
-	float4 lightPos;
+	float4 lightDir;
 	float4 lightColor;
 	float4 totalTime;
 };
@@ -51,15 +51,25 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float4 reflection = environmentMap.Sample(samLinear, reflectWS);
 
 	// refraction color
-	float4 refraction = float4(.12, .37, .35, 1);
+	//float4 refraction = float4(.12, .37, .35, 1); // green
+	//float4 refraction = float4(.02, .17, .3, 1); // dark blue
+	//float4 refraction = float4(.067, .298, .416, 1); // light blue
+	float4 refraction = float4(.07, .25, .39, 1); // blue
 
 	// calculating fresnel with Schlick's approximation (n1 = 1, n2 = 1.33)
 	float cosa = dot(-viewWS, normalWS);
 	float r0 = 0.02;
-	float fresnel = lerp(1 - cosa, 1, r0);
+	float fresnel = lerp(pow(1 - cosa, 5), 1, r0);
+
+	// calculating normalized sun specular
+	float3 H = -normalize(lightDir.xyz + viewWS.xyz);
+	float nDotH = max(0, dot(normalWS, H));
+	float shininess = 300.f;
+	float specularPower = (shininess + 2.f) / (2.f * 3.14f);
+	float4 specular = specularPower * lightColor * max(0.0, pow(nDotH, shininess));
 
 	// interpolating final color between reflected and refracted color
-	color = lerp(refraction, reflection, fresnel);
+	color = lerp(refraction, reflection, fresnel) + specular;
 
 	return color;
 }

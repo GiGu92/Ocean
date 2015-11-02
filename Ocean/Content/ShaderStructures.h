@@ -18,7 +18,7 @@ namespace Ocean
 		XMFLOAT4X4 view;
 		XMFLOAT4X4 projection;
 		XMFLOAT4 cameraPos;
-		XMFLOAT4 lightPos;
+		XMFLOAT4 lightDir;
 		XMFLOAT4 lightColor;
 		XMFLOAT4 totalTime;
 		XMFLOAT4 uvWaveSpeed;
