@@ -8,7 +8,7 @@ Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 	: eye(eye), at(at), up(up)
 {
-	Windows::Foundation::Size outputSize = deviceResources->GetOutputSize();
+	auto outputSize = deviceResources->GetOutputSize();
 	this->aspectRatio = outputSize.Width / outputSize.Height;
 	this->fov = 70.0f * XM_PI / 180.0f;
 

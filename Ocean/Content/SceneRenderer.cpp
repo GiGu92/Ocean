@@ -29,16 +29,19 @@ void SceneRenderer::InitializeScene()
 	m_water->vsConstantBufferData.uvWaveSpeed = XMFLOAT4(.4f, -.5f, -.7f, .3f);
 	
 	m_skybox = std::shared_ptr<SkyBox>(new SkyBox());
-}
 
-// Initializes view parameters when the window size changes.
-void SceneRenderer::CreateWindowSizeDependentResources()
-{
 	m_camera = std::shared_ptr<Camera>(new Camera(
 		XMFLOAT4(1.0f, 5.f, 5.f, 0.0f),
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
+}
+
+// Initializes view parameters when the window size changes.
+void SceneRenderer::CreateWindowSizeDependentResources()
+{
+	auto outputSize = m_deviceResources->GetOutputSize();
+	m_camera->aspectRatio = outputSize.Width / outputSize.Height;
 
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, m_camera->getProjection());	
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, m_camera->getProjection());
@@ -52,7 +55,7 @@ void SceneRenderer::Update(DX::StepTimer const& timer)
 	m_camera->Update(timer, m_deviceResources);
 
 	int gridHeight = 50;
-	m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, m_camera);
+	m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
 
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.view, m_camera->getView());
 	XMStoreFloat4(&m_water->vsConstantBufferData.cameraPos, m_camera->getEye());
@@ -127,7 +130,7 @@ void SceneRenderer::CreateDeviceDependentResources()
 	auto createWaterMeshTask = (createWaterVSTask && createWaterPSTask).then([this] () {
 		//m_water->GenerateSimpleGridMesh(m_deviceResources, 100, 100, .2f);
 		int gridHeight = 50;
-		m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, m_camera);
+		m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
 		m_water->LoadTextures(m_deviceResources, L"assets/textures/water_normal.dds", L"assets/textures/skybox.dds");
 	});
 

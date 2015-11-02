@@ -11,10 +11,6 @@ void GeneratedMesh::GenerateSphereMesh(std::shared_ptr<DX::DeviceResources> devi
 	std::vector<VertexPositionNormalTextureTangentBinormal> verticesVector;
 	std::vector<unsigned int> indicesVector;
 
-	//float latitudeBands = 30;
-	//float longitudeBands = 30;
-	//float radius = 0.5f;
-
 	for (int latNumber = 0; latNumber <= latitudeBands; latNumber++) {
 		float theta = (float)latNumber * PI / (float)latitudeBands;
 		float sinTheta = sin(theta);
@@ -156,9 +152,11 @@ XMVECTOR LinePlaneIntersection(XMVECTOR linePoint1, XMVECTOR linePoint2, XMVECTO
 	return linePoint1 + (((planeDistanceFromOrigin - nDotA) / nDotLine) * line);
 }
 
-void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, std::shared_ptr<Camera> camera)
+void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float padding, std::shared_ptr<Camera> camera)
 {
-	XMVECTOR screenCenter = camera->getEye() + camera->getDirection() * camera->nearClippingPane;
+	XMVECTOR eye = camera->getEye() - camera->getDirection() * padding;;
+
+	XMVECTOR screenCenter = eye + camera->getDirection() * camera->nearClippingPane;
 	float screenHeight = 2 * camera->nearClippingPane * tanf(camera->fov / 2.f);
 	float screenWidth = screenHeight * camera->aspectRatio;
 
@@ -170,7 +168,6 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 	XMVECTOR screenTopLeftCorner = screenBottomLeftCorner + screenUp * screenHeight;
 	XMVECTOR screenTopRightCorner = screenBottomLeftCorner + screenRight * screenWidth + screenUp * screenHeight;
 
-	XMVECTOR eye = camera->getEye();
 	XMVECTOR planeNormal = XMVectorSet(0, 1, 0, 1);
 	float planeDistanceFromOrigin = 0;
 
@@ -185,11 +182,9 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 			XMVECTOR screenPosition = XMVectorLerp(
 				XMVectorLerp(screenBottomLeftCorner, screenTopLeftCorner, i),
 				XMVectorLerp(screenBottomRightCorner, screenTopRightCorner, i),
-				//XMVectorLerp(screenBottomLeftCorner + (-screenUp - screenRight), screenTopLeftCorner + (screenUp - screenRight), i),
-				//XMVectorLerp(screenBottomRightCorner + (-screenUp, + screenRight), screenTopRightCorner + (screenUp + screenRight), i),
 				j);
 			XMVECTOR intersection = LinePlaneIntersection(eye, screenPosition, planeNormal, planeDistanceFromOrigin);
-			if (XMVectorGetX(XMVector3Dot(intersection - camera->getEye(), camera->getDirection())) < 0.f)
+			if (XMVectorGetX(XMVector3Dot(intersection - eye, camera->getDirection())) < 0.f)
 			{
 				horizonReached = true;
 				break;
