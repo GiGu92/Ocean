@@ -51,9 +51,6 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float4 reflection = environmentMap.Sample(samLinear, reflectWS);
 
 	// refraction color
-	//float4 refraction = float4(.12, .37, .35, 1); // green
-	//float4 refraction = float4(.02, .17, .3, 1); // dark blue
-	//float4 refraction = float4(.067, .298, .416, 1); // light blue
 	float4 refraction = float4(.07, .25, .39, 1); // blue
 
 	// calculating fresnel with Schlick's approximation (n1 = 1, n2 = 1.33)
@@ -65,7 +62,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float3 H = -normalize(lightDir.xyz + viewWS.xyz);
 	float nDotH = max(0, dot(normalWS, H));
 	float shininess = 300.f;
-	float specularPower = (shininess + 2.f) / (2.f * 3.14f);
+	float specularPower = fresnel * (shininess + 2.f) / (8.f * 3.14f);
 	float4 specular = specularPower * lightColor * max(0.0, pow(nDotH, shininess));
 
 	// interpolating final color between reflected and refracted color

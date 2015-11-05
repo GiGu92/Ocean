@@ -41,7 +41,7 @@ struct PixelShaderInput
 };
 
 float3 CalculateGerstnerOffset(
-	float2 xzVtx, float4 steepness, float4 amp, float4 freq, 
+	float2 xzVtx, float4 steepness, float4 amp, float4 freq,
 	float4 speed, float4 dirAB, float4 dirCD, float4 time)
 {
 	float3 offsets;
@@ -63,7 +63,7 @@ float3 CalculateGerstnerOffset(
 }
 
 float3 CalculateGerstnerNormal(
-	float2 xzVtx, float intensity, float4 amp, float4 freq, 
+	float2 xzVtx, float intensity, float4 amp, float4 freq,
 	float4 speed, float4 dirAB, float4 dirCD, float4 time)
 {
 	float3 nrml = float3(0, 2.0, 0);
@@ -85,6 +85,17 @@ float3 CalculateGerstnerNormal(
 	return nrml;
 }
 
+float CalculateWaveAttenuation(float d, float dmin, float dmax)
+{
+	// Quadratic curve that is 1 at dmin and 0 at dmax
+	// Constant 1 for less than dmin, constant 0 for more than dmax
+	if (d > dmax) return 0.f;
+	else
+	{
+		return saturate((1.f / ((dmin - dmax)*(dmin - dmax))) * ((d-dmax) * (d - dmax)));
+	}
+}
+
 // Simple shader to do vertex processing on the GPU.
 PixelShaderInput main(VertexShaderInput input)
 {
@@ -100,22 +111,23 @@ PixelShaderInput main(VertexShaderInput input)
 	float4 GDirectionAB = float4(0.47, 0.35, -0.2, 0.1);
 	float4 GDirectionCD = float4(0.7, -0.68, 0.71, -0.2);
 
+	float distanceToCamera = length(posWS - cameraPos.xyz);
+	float waveAttenuation = CalculateWaveAttenuation(distanceToCamera, 70, 150);
 	float3 gerstnerOffset = CalculateGerstnerOffset(
 		posWS.xz, GSteepness, GAmplitude, GFrequency,
-		GSpeed, GDirectionAB, GDirectionCD, totalTime);
+		GSpeed, GDirectionAB, GDirectionCD, totalTime) * waveAttenuation;
 	
 	posWS += gerstnerOffset;
 
 	float3 gerstnerNormal = CalculateGerstnerNormal(
 		posWS.xz, GSteepness, GAmplitude, GFrequency,
-		GSpeed, GDirectionAB, GDirectionCD, totalTime);
-
+		GSpeed, GDirectionAB, GDirectionCD, totalTime) * waveAttenuation;
 
 	float4x4 VP = mul(view, projection);
 
 	output.posPS = mul(float4(posWS, 1), VP);
 	output.posWS = posWS;
-	output.normalWS = gerstnerNormal;//mul(input.normalOS, (float3x3)model);
+	output.normalWS = gerstnerNormal;
 	output.normalUV1 = input.texCoord + uvWaveSpeed.xy * totalTime.x / 100.f;
 	output.normalUV2 = input.texCoord + uvWaveSpeed.zw * totalTime.x / 100.f;
 

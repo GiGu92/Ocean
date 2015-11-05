@@ -154,14 +154,15 @@ XMVECTOR LinePlaneIntersection(XMVECTOR linePoint1, XMVECTOR linePoint2, XMVECTO
 
 void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float padding, std::shared_ptr<Camera> camera)
 {
-	XMVECTOR eye = camera->getEye() - camera->getDirection() * padding;;
+	XMVECTOR viewDir = camera->getDirection();
+	XMVECTOR eye = camera->getEye() - viewDir * padding;
 
-	XMVECTOR screenCenter = eye + camera->getDirection() * camera->nearClippingPane;
+	XMVECTOR screenCenter = eye + viewDir * camera->nearClippingPane;
 	float screenHeight = 2 * camera->nearClippingPane * tanf(camera->fov / 2.f);
 	float screenWidth = screenHeight * camera->aspectRatio;
 
-	XMVECTOR screenRight = XMVector3Normalize(XMVector3Cross(camera->getDirection(), camera->getUp()));
-	XMVECTOR screenUp = XMVector3Normalize(XMVector3Cross(screenRight, camera->getDirection()));
+	XMVECTOR screenRight = XMVector3Normalize(XMVector3Cross(viewDir, camera->getUp()));
+	XMVECTOR screenUp = XMVector3Normalize(XMVector3Cross(screenRight, viewDir));
 
 	XMVECTOR screenBottomLeftCorner = screenCenter - screenRight * (screenWidth / 2.f) - screenUp * (screenHeight / 2.f);
 	XMVECTOR screenBottomRightCorner = screenBottomLeftCorner + screenRight * screenWidth;
@@ -174,21 +175,28 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 	std::vector<VertexPositionNormalTextureTangentBinormal> planeVerticesVector;
 	float epsilon = .001f;
 	bool horizonReached = false;
+	bool vertexTooFar = false;
 	int quadRows = -1;
 	for (float i = 0; i < 1.f + epsilon; i += 1.f / (float)height)
 	{
+		XMVECTOR left = XMVectorLerp(screenBottomLeftCorner, screenTopLeftCorner, i);
+		XMVECTOR right = XMVectorLerp(screenBottomRightCorner, screenTopRightCorner, i);
+
 		for (float j = 0; j < 1.f + epsilon; j += 1.f / (float)width)
 		{
-			XMVECTOR screenPosition = XMVectorLerp(
-				XMVectorLerp(screenBottomLeftCorner, screenTopLeftCorner, i),
-				XMVectorLerp(screenBottomRightCorner, screenTopRightCorner, i),
-				j);
+			XMVECTOR screenPosition = XMVectorLerp(left, right,	j);
 			XMVECTOR intersection = LinePlaneIntersection(eye, screenPosition, planeNormal, planeDistanceFromOrigin);
-			if (XMVectorGetX(XMVector3Dot(intersection - eye, camera->getDirection())) < 0.f)
+			if (XMVectorGetX(XMVector3Dot(intersection - eye, viewDir)) < 0.f)
 			{
 				horizonReached = true;
 				break;
 			}
+			//if (XMVectorGetX(XMVector3Length(intersection - eye)) > 500.f)
+			//{
+			//	vertexTooFar = true;
+			//	break;
+			//}
+
 			XMFLOAT3 position;
 			XMStoreFloat3(&position, intersection);
 			planeVerticesVector.push_back(VertexPositionNormalTextureTangentBinormal(
@@ -198,7 +206,7 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 				XMFLOAT3(1.f, 0.f, 0.f),
 				XMFLOAT3(0.f, 0.f, 1.f)));
 		}
-		if (horizonReached)
+		if (horizonReached || vertexTooFar)
 			break;
 		
 		quadRows++;

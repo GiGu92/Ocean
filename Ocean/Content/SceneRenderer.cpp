@@ -31,7 +31,7 @@ void SceneRenderer::InitializeScene()
 	m_skybox = std::shared_ptr<SkyBox>(new SkyBox());
 
 	m_camera = std::shared_ptr<Camera>(new Camera(
-		XMFLOAT4(1.0f, 5.f, 5.f, 0.0f),
+		XMFLOAT4(1.0f, 2.f, 5.f, 0.0f),
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
@@ -45,6 +45,9 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, m_camera->getProjection());	
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, m_camera->getProjection());
+	
+	int gridHeight = 50;
+	m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -52,6 +55,7 @@ void SceneRenderer::Update(DX::StepTimer const& timer)
 {
 	ProcessInput();
 
+	XMVECTOR oldEye = m_camera->getEye();
 	m_camera->Update(timer, m_deviceResources);
 
 	int gridHeight = 50;
@@ -127,10 +131,7 @@ void SceneRenderer::CreateDeviceDependentResources()
 		m_water->CreateConstantBuffers(m_deviceResources);
 	});
 
-	auto createWaterMeshTask = (createWaterVSTask && createWaterPSTask).then([this] () {
-		//m_water->GenerateSimpleGridMesh(m_deviceResources, 100, 100, .2f);
-		int gridHeight = 50;
-		m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
+	auto loadWaterTexturesTask = (createWaterVSTask && createWaterPSTask).then([this] () {
 		m_water->LoadTextures(m_deviceResources, L"assets/textures/water_normal.dds", L"assets/textures/skybox.dds");
 	});
 
@@ -150,7 +151,7 @@ void SceneRenderer::CreateDeviceDependentResources()
 	});
 
 	// Once the everything is loaded, the scene is ready to be rendered.
-	(createWaterMeshTask && createSkyboxMeshTask).then([this] () {
+	(loadWaterTexturesTask && createSkyboxMeshTask).then([this] () {
 		m_loadingComplete = true;
 	});
 }
