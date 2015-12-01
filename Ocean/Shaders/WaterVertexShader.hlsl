@@ -102,6 +102,8 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 posOS = float4(input.posOS, 1.0f);
 	float3 posWS = mul(posOS, model).xyz;
+	output.normalUV1 = posWS.xz / 20.f + uvWaveSpeed.xy * totalTime.x / 100.f;
+	output.normalUV2 = posWS.xz / 20.f + uvWaveSpeed.zw * totalTime.x / 100.f;
 	
 	float GIntensity = 1.0f;
 	float4 GAmplitude = float4(0.14, 0.76, 0.175, 0.225);
@@ -128,8 +130,7 @@ PixelShaderInput main(VertexShaderInput input)
 	output.posPS = mul(float4(posWS, 1), VP);
 	output.posWS = posWS;
 	output.normalWS = gerstnerNormal;
-	output.normalUV1 = input.texCoord + uvWaveSpeed.xy * totalTime.x / 100.f;
-	output.normalUV2 = input.texCoord + uvWaveSpeed.zw * totalTime.x / 100.f;
+	//output.normalWS = mul(float4(input.normalOS, 1), model).xyz;	
 
 	return output;
 }

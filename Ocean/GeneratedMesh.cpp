@@ -31,21 +31,21 @@ void GeneratedMesh::GenerateSphereMesh(std::shared_ptr<DX::DeviceResources> devi
 
 			verticesVector.push_back(vs);
 		}
+	}
 
-		for (int latNumber = 0; latNumber < latitudeBands; latNumber++) {
-			for (int longNumber = 0; longNumber < longitudeBands; longNumber++) {
-				unsigned int first = (latNumber * (longitudeBands + 1)) + longNumber;
-				unsigned int second = first + longitudeBands + 1;
+	for (int latNumber = 0; latNumber < latitudeBands; latNumber++) {
+		for (int longNumber = 0; longNumber < longitudeBands; longNumber++) {
+			unsigned int first = (latNumber * (longitudeBands + 1)) + longNumber;
+			unsigned int second = first + longitudeBands + 1;
 
-				indicesVector.push_back(first);
-				indicesVector.push_back(second);
-				indicesVector.push_back(first + 1);
+			indicesVector.push_back(first);
+			indicesVector.push_back(second);
+			indicesVector.push_back(first + 1);
 
-				indicesVector.push_back(second);
-				indicesVector.push_back(second + 1);
-				indicesVector.push_back(first + 1);
+			indicesVector.push_back(second);
+			indicesVector.push_back(second + 1);
+			indicesVector.push_back(first + 1);
 
-			}
 		}
 	}
 
@@ -143,6 +143,80 @@ void GeneratedMesh::GenerateSimpleGridMesh(std::shared_ptr<DX::DeviceResources> 
 		);
 }
 
+void GeneratedMesh::GeneratePolarGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int rads, int angs, float radius)
+{
+	float PI;
+	XMStoreFloat(&PI, g_XMPi);
+
+	std::vector<VertexPositionNormalTextureTangentBinormal> verticesVector;
+	std::vector<unsigned int> indicesVector;
+
+	float epsilon = 0.001f;
+	for (float rad = 0.0f; rad < radius + epsilon; rad += radius / (float)rads)
+	{
+		for (float angle = 0.0f; angle < 2.0f * PI + epsilon; angle += (2.0f * PI) / angs)
+		{
+			VertexPositionNormalTextureTangentBinormal vs;
+			vs.position = XMFLOAT3(rad * cosf(angle), 0, rad * sinf(angle));
+			vs.normal = XMFLOAT3(0, 1, 0);
+			vs.textureCoordinate = XMFLOAT2(vs.position.x, vs.position.z);
+			// TODO: calculate correct tangent and binormal vectors
+			vs.tangent = XMFLOAT3();
+			vs.binormal = XMFLOAT3();
+
+			verticesVector.push_back(vs);
+		}
+	}
+
+	for (int latNumber = 0; latNumber < rads; latNumber++) {
+		for (int longNumber = 0; longNumber < angs; longNumber++) {
+			unsigned int first = (latNumber * (angs + 1)) + longNumber;
+			unsigned int second = first + angs + 1;
+
+			indicesVector.push_back(first);
+			indicesVector.push_back(second);
+			indicesVector.push_back(first + 1);
+
+			indicesVector.push_back(second);
+			indicesVector.push_back(second + 1);
+			indicesVector.push_back(first + 1);
+
+		}
+	}
+
+
+	VertexPositionNormalTextureTangentBinormal* vertices = &verticesVector[0];
+	unsigned int* indices = &indicesVector[0];
+
+	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+	vertexBufferData.pSysMem = vertices;
+	vertexBufferData.SysMemPitch = 0;
+	vertexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionNormalTextureTangentBinormal) * verticesVector.size(), D3D11_BIND_VERTEX_BUFFER);
+	DX::ThrowIfFailed(
+		deviceResources->GetD3DDevice()->CreateBuffer(
+			&vertexBufferDesc,
+			&vertexBufferData,
+			&vertexBuffer
+			)
+		);
+
+	indexCount = indicesVector.size();
+
+	D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+	indexBufferData.pSysMem = indices;
+	indexBufferData.SysMemPitch = 0;
+	indexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned int) * indicesVector.size(), D3D11_BIND_INDEX_BUFFER);
+	DX::ThrowIfFailed(
+		deviceResources->GetD3DDevice()->CreateBuffer(
+			&indexBufferDesc,
+			&indexBufferData,
+			&indexBuffer
+			)
+		);
+}
+
 XMVECTOR LinePlaneIntersection(XMVECTOR linePoint1, XMVECTOR linePoint2, XMVECTOR planeNormal, float planeDistanceFromOrigin)
 {
 	XMVECTOR line = linePoint2 - linePoint1;
@@ -202,7 +276,7 @@ void GeneratedMesh::GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResource
 			planeVerticesVector.push_back(VertexPositionNormalTextureTangentBinormal(
 				position,
 				XMFLOAT3(0.f, 1.f, 0.f),
-				XMFLOAT2(position.x / 20.f, position.z/ 20.f),
+				XMFLOAT2(position.x, position.z),
 				XMFLOAT3(1.f, 0.f, 0.f),
 				XMFLOAT3(0.f, 0.f, 1.f)));
 		}

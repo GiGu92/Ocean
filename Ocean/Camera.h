@@ -39,6 +39,7 @@ private:
 	XMFLOAT4 eye;
 	XMFLOAT4 at;
 	XMFLOAT4 up;
+	XMFLOAT4 defaultEye;
 
 	float movementSpeed;
 	XMFLOAT4 movementDir;

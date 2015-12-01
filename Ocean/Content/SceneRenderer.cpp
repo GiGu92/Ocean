@@ -43,11 +43,12 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 	auto outputSize = m_deviceResources->GetOutputSize();
 	m_camera->aspectRatio = outputSize.Width / outputSize.Height;
 
-	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, m_camera->getProjection());	
+	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, m_camera->getProjection());
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, m_camera->getProjection());
-	
+
 	int gridHeight = 50;
-	m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
+	//m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
+	m_water->GeneratePolarGridMesh(m_deviceResources, 300, 100, 100);
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -58,9 +59,10 @@ void SceneRenderer::Update(DX::StepTimer const& timer)
 	XMVECTOR oldEye = m_camera->getEye();
 	m_camera->Update(timer, m_deviceResources);
 
-	int gridHeight = 50;
-	m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
+	//int gridHeight = 50;
+	//m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
 
+	XMStoreFloat4x4(&m_water->vsConstantBufferData.model, XMMatrixTranspose(XMMatrixTranslation(XMVectorGetX(m_camera->getEye()), 0, XMVectorGetZ(m_camera->getEye()))));
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.view, m_camera->getView());
 	XMStoreFloat4(&m_water->vsConstantBufferData.cameraPos, m_camera->getEye());
 	float totalTime = (float)timer.GetTotalSeconds();

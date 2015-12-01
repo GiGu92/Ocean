@@ -6,7 +6,7 @@ Camera::Camera() { };
 
 Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
 	std::shared_ptr<DX::DeviceResources> deviceResources)
-	: eye(eye), at(at), up(up)
+	: eye(eye), at(at), up(up), defaultEye(eye)
 {
 	auto outputSize = deviceResources->GetOutputSize();
 	this->aspectRatio = outputSize.Width / outputSize.Height;
@@ -83,6 +83,11 @@ void Camera::ProcessInput(DX::StepTimer const& timer, std::shared_ptr<DX::Device
 	if (window->GetAsyncKeyState(VirtualKey::Q) == CoreVirtualKeyStates::Down)
 	{
 		md += -this->getUp();
+	}
+
+	if (window->GetAsyncKeyState(VirtualKey::R) == CoreVirtualKeyStates::Down)
+	{
+		eye = defaultEye;
 	}
 
 	if (window->GetAsyncKeyState(VirtualKey::Shift) == CoreVirtualKeyStates::Down)
