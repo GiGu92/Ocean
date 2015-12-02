@@ -31,7 +31,7 @@ void SceneRenderer::InitializeScene()
 	m_skybox = std::shared_ptr<SkyBox>(new SkyBox());
 
 	m_camera = std::shared_ptr<Camera>(new Camera(
-		XMFLOAT4(1.0f, 2.f, 5.f, 0.0f),
+		XMFLOAT4(-10.0f, 7.f, 5.f, 0.0f),
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
@@ -48,7 +48,7 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 
 	int gridHeight = 50;
 	//m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
-	m_water->GeneratePolarGridMesh(m_deviceResources, 300, 100, 100);
+	m_water->GeneratePolarGridMesh(m_deviceResources, 1000, 100, 500);
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.

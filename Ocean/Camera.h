@@ -24,6 +24,9 @@ public:
 	XMMATRIX getWorld();
 	XMMATRIX getView();
 	XMMATRIX getProjection();
+	inline float getPitch() { return atanf((at.y - eye.y) / (at.x - eye.x)); }
+	inline float getYaw() { return -0.5f * atanf((at.z - eye.z) / (at.x - eye.x)); }
+	inline float getRoll() { return 0.f; }
 
 	void Update(DX::StepTimer const& timer,
 		std::shared_ptr<DX::DeviceResources>& deviceResources);

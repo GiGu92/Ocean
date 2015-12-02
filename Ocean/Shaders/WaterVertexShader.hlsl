@@ -102,35 +102,48 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 posOS = float4(input.posOS, 1.0f);
 	float3 posWS = mul(posOS, model).xyz;
-	output.normalUV1 = posWS.xz / 20.f + uvWaveSpeed.xy * totalTime.x / 100.f;
-	output.normalUV2 = posWS.xz / 20.f + uvWaveSpeed.zw * totalTime.x / 100.f;
+	output.normalUV1 = posWS.xz * .05f + uvWaveSpeed.xy * totalTime.x * .025f;
+	output.normalUV2 = posWS.xz * .05f + uvWaveSpeed.zw * totalTime.x * .025f;
 	
 	float GIntensity = 1.0f;
-	float4 GAmplitude = float4(0.14, 0.76, 0.175, 0.225);
+	float4 GAmplitude = float4(0.14, 0.26, 0.175, 0.225);
 	float4 GFrequency = float4(0.5, 0.38, 0.59, 0.6);
 	float4 GSteepness = float4(7.0, 2.0, 6.0, 2.0);
 	float4 GSpeed = float4(-3.0, 2.0, 1.0, 3.0);
 	float4 GDirectionAB = float4(0.47, 0.35, -0.2, 0.1);
 	float4 GDirectionCD = float4(0.7, -0.68, 0.71, -0.2);
+	float GIntensity2 = 1.0f;
+	float4 GAmplitude2 = float4(0.054, 0.065, 0.034, 0.015);
+	float4 GFrequency2 = float4(1.5, 1.9, 1.2, 0.8);
+	float4 GSteepness2 = float4(3.0, 4.0, 5.0, 6.0);
+	float4 GSpeed2 = float4(1.0, 1.5, 0.5, 2.0);
+	float4 GDirectionAB2 = float4(0.44, 0.15, -0.35, -0.15);
+	float4 GDirectionCD2 = float4(0.12, 0.78, -0.11, -0.54);
 
 	float distanceToCamera = length(posWS - cameraPos.xyz);
-	float waveAttenuation = CalculateWaveAttenuation(distanceToCamera, 70, 150);
+	float waveAttenuation = 1;
 	float3 gerstnerOffset = CalculateGerstnerOffset(
 		posWS.xz, GSteepness, GAmplitude, GFrequency,
 		GSpeed, GDirectionAB, GDirectionCD, totalTime) * waveAttenuation;
+	float3 gerstnerOffset2 = CalculateGerstnerOffset(
+		posWS.xz, GSteepness2, GAmplitude2, GFrequency2,
+		GSpeed2, GDirectionAB2, GDirectionCD2, totalTime) * waveAttenuation;
 	
-	posWS += gerstnerOffset;
+	posWS += gerstnerOffset + gerstnerOffset2;
 
 	float3 gerstnerNormal = CalculateGerstnerNormal(
-		posWS.xz, GSteepness, GAmplitude, GFrequency,
+		posWS.xz, GIntensity, GAmplitude, GFrequency,
 		GSpeed, GDirectionAB, GDirectionCD, totalTime) * waveAttenuation;
+	float3 gerstnerNormal2 = CalculateGerstnerNormal(
+		posWS.xz, GIntensity2, GAmplitude2, GFrequency2,
+		GSpeed2, GDirectionAB2, GDirectionCD2, totalTime) * waveAttenuation;
 
 	float4x4 VP = mul(view, projection);
 
 	output.posPS = mul(float4(posWS, 1), VP);
 	output.posWS = posWS;
-	output.normalWS = gerstnerNormal;
-	//output.normalWS = mul(float4(input.normalOS, 1), model).xyz;	
+	output.normalWS = normalize(gerstnerNormal + gerstnerNormal2);
+	//output.normalWS = input.normalOS;
 
 	return output;
 }
