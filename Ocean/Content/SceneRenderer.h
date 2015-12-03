@@ -25,21 +25,21 @@ namespace Ocean
 		void ProcessInput();
 		void Render();
 
-		bool m_wireframe = false;
+		bool wireframe = false;
 
 	private:
 		// Cached pointer to device resources.
-		std::shared_ptr<DX::DeviceResources> m_deviceResources;
+		std::shared_ptr<DX::DeviceResources> deviceResources;
 
 		// Scene resources
-		std::shared_ptr<Camera> m_camera;
-		std::shared_ptr<Water> m_water;
-		std::shared_ptr<SkyBox> m_skybox;
+		std::shared_ptr<Camera> camera;
+		std::shared_ptr<Water> water;
+		std::shared_ptr<SkyBox> skybox;
 		
 
 		// Variables used with the rendering loop.
-		bool	m_loadingComplete;
-		std::shared_ptr<CommonStates> m_states;
+		bool	loadingComplete;
+		std::shared_ptr<CommonStates> states;
 	};
 }
 
