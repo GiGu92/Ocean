@@ -241,6 +241,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Ocean_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
