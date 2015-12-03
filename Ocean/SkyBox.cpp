@@ -1,16 +1,16 @@
 #include "pch.h"
-#include "SkyBox.h"
+#include "Skybox.h"
 
 #include "DDSTextureLoader.h"
 
 using namespace Ocean;
 
-SkyBox::SkyBox()
+Skybox::Skybox()
 { 
 	mesh = std::shared_ptr<GeneratedMesh>(new GeneratedMesh());
 }
 
-void SkyBox::LoadTextures(
+void Skybox::LoadTextures(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
 		const wchar_t* diffuseTextureFile)
 {
@@ -32,7 +32,7 @@ void SkyBox::LoadTextures(
 	device->CreateSamplerState(&sampDesc, &linearSampler);
 }
 
-void SkyBox::LoadVertexShader(
+void Skybox::LoadVertexShader(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
 	const std::vector<byte>& vsFileData)
 {
@@ -67,7 +67,7 @@ void SkyBox::LoadVertexShader(
 		);
 }
 
-void SkyBox::LoadPixelShader(
+void Skybox::LoadPixelShader(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
 	const std::vector<byte>& psFileData)
 {
@@ -81,7 +81,7 @@ void SkyBox::LoadPixelShader(
 		);
 }
 
-void SkyBox::CreateConstantBuffers(
+void Skybox::CreateConstantBuffers(
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 {
 	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
@@ -94,13 +94,13 @@ void SkyBox::CreateConstantBuffers(
 		);
 }
 
-void SkyBox::LoadMesh(
+void Skybox::LoadMesh(
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 {
 	mesh->GenerateSphereMesh(deviceResources, 20, 20, .5f);
 }
 
-void SkyBox::Draw(
+void Skybox::Draw(
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 {
 
@@ -167,7 +167,7 @@ void SkyBox::Draw(
 		);
 }
 
-SkyBox::~SkyBox()
+Skybox::~Skybox()
 {
 	vertexShader.Reset();
 	pixelShader.Reset();

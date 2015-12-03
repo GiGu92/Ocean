@@ -73,9 +73,6 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="OceanMain.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Content\SceneRenderer.cpp">
-      <Filter>Content</Filter>
-    </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Content</Filter>
     </ClCompile>
@@ -85,7 +82,10 @@
     <ClCompile Include="GeneratedMesh.cpp">
       <Filter>Content</Filter>
     </ClCompile>
-    <ClCompile Include="SkyBox.cpp">
+    <ClCompile Include="Content\OceanSceneRenderer.cpp">
+      <Filter>Content</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
       <Filter>Content</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,9 +93,6 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="OceanMain.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Content\SceneRenderer.h">
-      <Filter>Content</Filter>
-    </ClInclude>
     <ClInclude Include="Camera.h">
       <Filter>Content</Filter>
     </ClInclude>
@@ -105,7 +102,10 @@
     <ClInclude Include="GeneratedMesh.h">
       <Filter>Content</Filter>
     </ClInclude>
-    <ClInclude Include="SkyBox.h">
+    <ClInclude Include="Content\OceanSceneRenderer.h">
+      <Filter>Content</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
       <Filter>Content</Filter>
     </ClInclude>
   </ItemGroup>
@@ -127,7 +127,6 @@
     <None Include="Ocean_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\SkyboxPixelShader.hlsl">

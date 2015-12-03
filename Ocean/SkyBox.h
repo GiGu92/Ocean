@@ -3,10 +3,10 @@
 
 namespace Ocean
 {
-	class SkyBox
+	class Skybox
 	{
 	public:
-		SkyBox();
+		Skybox();
 
 		void LoadTextures(
 			std::shared_ptr<DX::DeviceResources> deviceResources,
@@ -23,7 +23,7 @@ namespace Ocean
 			std::shared_ptr<DX::DeviceResources> deviceResources);
 		void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 
-		~SkyBox();
+		~Skybox();
 
 		ModelViewProjectionConstantBuffer vsConstantBufferData;
 

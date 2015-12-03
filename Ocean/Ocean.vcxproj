@@ -204,7 +204,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Common\DeviceResources.h" />
-    <ClInclude Include="Content\SceneRenderer.h" />
+    <ClInclude Include="Content\OceanSceneRenderer.h" />
     <ClInclude Include="GeneratedMesh.h" />
     <ClInclude Include="OceanMain.h" />
     <ClInclude Include="Common\DirectXHelper.h" />
@@ -213,14 +213,14 @@
     <ClInclude Include="Content\SampleFpsTextRenderer.h" />
     <ClInclude Include="Content\ShaderStructures.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="SkyBox.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Water.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Common\DeviceResources.cpp" />
-    <ClCompile Include="Content\SceneRenderer.cpp" />
+    <ClCompile Include="Content\OceanSceneRenderer.cpp" />
     <ClCompile Include="GeneratedMesh.cpp" />
     <ClCompile Include="OceanMain.cpp" />
     <ClCompile Include="Content\SampleFpsTextRenderer.cpp" />
@@ -233,7 +233,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="SkyBox.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Water.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -241,7 +241,6 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="Ocean_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>

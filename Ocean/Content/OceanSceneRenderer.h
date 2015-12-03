@@ -8,15 +8,15 @@
 
 #include "Camera.h"
 #include "Water.h"
-#include "SkyBox.h"
+#include "Skybox.h"
 
 namespace Ocean
 {
 	// This sample renderer instantiates a basic rendering pipeline.
-	class SceneRenderer
+	class OceanSceneRenderer
 	{
 	public:
-		SceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources);
+		OceanSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources);
 		void InitializeScene();
 		void CreateDeviceDependentResources();
 		void CreateWindowSizeDependentResources();
@@ -34,7 +34,7 @@ namespace Ocean
 		// Scene resources
 		std::shared_ptr<Camera> camera;
 		std::shared_ptr<Water> water;
-		std::shared_ptr<SkyBox> skybox;
+		std::shared_ptr<Skybox> skybox;
 		
 
 		// Variables used with the rendering loop.

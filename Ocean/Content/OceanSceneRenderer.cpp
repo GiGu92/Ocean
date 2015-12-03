@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "Windows.h"
-#include "SceneRenderer.h"
+#include "OceanSceneRenderer.h"
 
 #include "..\Common\DirectXHelper.h"
 
@@ -10,7 +10,7 @@ using namespace DirectX;
 using namespace Windows::Foundation;
 
 // Loads vertex and pixel shaders from files and instantiates the cube geometry.
-SceneRenderer::SceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
+OceanSceneRenderer::OceanSceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
 	loadingComplete(false),
 	deviceResources(deviceResources)
 {
@@ -20,7 +20,7 @@ SceneRenderer::SceneRenderer(const std::shared_ptr<DX::DeviceResources>& deviceR
 }
 
 // Initialize scene objects
-void SceneRenderer::InitializeScene()
+void OceanSceneRenderer::InitializeScene()
 {
 	water = std::shared_ptr<Water>(new Water());
 	XMStoreFloat4x4(&water->vsConstantBufferData.model, XMMatrixIdentity());
@@ -28,7 +28,7 @@ void SceneRenderer::InitializeScene()
 	water->psConstantBufferData.lightDir = XMFLOAT4(-.9f, -.34f, -.25f, 1.f);
 	water->psConstantBufferData.lightColor = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	
-	skybox = std::shared_ptr<SkyBox>(new SkyBox());
+	skybox = std::shared_ptr<Skybox>(new Skybox());
 
 	camera = std::shared_ptr<Camera>(new Camera(
 		XMFLOAT4(-10.0f, 7.f, 5.f, 0.0f),
@@ -41,7 +41,7 @@ void SceneRenderer::InitializeScene()
 }
 
 // Initializes view parameters when the window size changes.
-void SceneRenderer::CreateWindowSizeDependentResources()
+void OceanSceneRenderer::CreateWindowSizeDependentResources()
 {
 	auto outputSize = deviceResources->GetOutputSize();
 	camera->aspectRatio = outputSize.Width / outputSize.Height;
@@ -53,7 +53,7 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
-void SceneRenderer::Update(DX::StepTimer const& timer)
+void OceanSceneRenderer::Update(DX::StepTimer const& timer)
 {
 	ProcessInput();
 
@@ -73,7 +73,7 @@ void SceneRenderer::Update(DX::StepTimer const& timer)
 }
 
 // Processes user input
-void SceneRenderer::ProcessInput()
+void OceanSceneRenderer::ProcessInput()
 {
 	using namespace Windows::UI::Core;
 	using namespace Windows::System;
@@ -88,7 +88,7 @@ void SceneRenderer::ProcessInput()
 }
 
 // Renders one frame using the vertex and pixel shaders.
-void SceneRenderer::Render()
+void OceanSceneRenderer::Render()
 {
 	// Loading is asynchronous. Only draw geometry after it's loaded.
 	if (!loadingComplete)
@@ -115,7 +115,7 @@ void SceneRenderer::Render()
 	water->Draw(deviceResources);
 }
 
-void SceneRenderer::CreateDeviceDependentResources()
+void OceanSceneRenderer::CreateDeviceDependentResources()
 {
 	states = std::shared_ptr<CommonStates>(new CommonStates(deviceResources->GetD3DDevice()));
 
@@ -158,7 +158,7 @@ void SceneRenderer::CreateDeviceDependentResources()
 	});
 }
 
-void SceneRenderer::ReleaseDeviceDependentResources()
+void OceanSceneRenderer::ReleaseDeviceDependentResources()
 {
 	loadingComplete = false;
 	states.reset();
