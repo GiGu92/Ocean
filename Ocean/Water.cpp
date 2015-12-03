@@ -4,7 +4,10 @@
 
 using namespace Windows::Foundation;
 
-Water::Water() { }
+Water::Water() 
+{
+	mesh = std::shared_ptr<GeneratedMesh>(new GeneratedMesh());
+}
 
 void Water::LoadTextures(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
@@ -101,6 +104,12 @@ void Water::CreateConstantBuffers(
 		);
 }
 
+void Water::LoadMesh(
+	std::shared_ptr<DX::DeviceResources> deviceResources)
+{
+	mesh->GeneratePolarGridMesh(deviceResources, 1000, 100, 500);
+}
+
 void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 {
 	auto device = deviceResources->GetD3DDevice();
@@ -127,13 +136,13 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 	context->IASetVertexBuffers(
 		0,
 		1,
-		vertexBuffer.GetAddressOf(),
+		mesh->vertexBuffer.GetAddressOf(),
 		&stride,
 		&offset
 		);
 
 	context->IASetIndexBuffer(
-		indexBuffer.Get(),
+		mesh->indexBuffer.Get(),
 		DXGI_FORMAT_R32_UINT,
 		0
 		);
@@ -177,7 +186,7 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 
 	// Draw the objects.
 	context->DrawIndexed(
-		indexCount,
+		mesh->indexCount,
 		0,
 		0
 		);

@@ -36,7 +36,8 @@ void SceneRenderer::InitializeScene()
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
 
-	m_water->GeneratePolarGridMesh(m_deviceResources, 1000, 100, 500);
+	//m_water->GeneratePolarGridMesh(m_deviceResources, 1000, 100, 500);
+	m_water->LoadMesh(m_deviceResources);
 }
 
 // Initializes view parameters when the window size changes.

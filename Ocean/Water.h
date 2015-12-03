@@ -6,7 +6,7 @@
 
 using namespace Ocean;
 
-class Water : public GeneratedMesh
+class Water
 {
 public:
 	Water();
@@ -22,6 +22,8 @@ public:
 		const std::vector<byte>& psFileData);
 	void CreateConstantBuffers(
 		std::shared_ptr<DX::DeviceResources> deviceResources);
+	void LoadMesh(
+		std::shared_ptr<DX::DeviceResources> deviceResources);
 	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 	~Water();
 
@@ -29,6 +31,8 @@ public:
 	WaterConstantBuffer                                psConstantBufferData;
 
 protected:
+	std::shared_ptr<GeneratedMesh> mesh;
+
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>         vertexShader;
 	Microsoft::WRL::ComPtr<ID3D11PixelShader>          pixelShader;
 	Microsoft::WRL::ComPtr<ID3D11Buffer>               vsConstantBuffer;
