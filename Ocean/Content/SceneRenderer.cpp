@@ -35,6 +35,8 @@ void SceneRenderer::InitializeScene()
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		m_deviceResources));
+
+	m_water->GeneratePolarGridMesh(m_deviceResources, 1000, 100, 500);
 }
 
 // Initializes view parameters when the window size changes.
@@ -46,9 +48,8 @@ void SceneRenderer::CreateWindowSizeDependentResources()
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.projection, m_camera->getProjection());
 	XMStoreFloat4x4(&m_skybox->vsConstantBufferData.projection, m_camera->getProjection());
 
-	int gridHeight = 50;
+	//int gridHeight = 50;
 	//m_water->GenerateProjectedGridMesh(m_deviceResources, (int)((float)gridHeight * m_camera->aspectRatio), gridHeight, 2.5f, m_camera);
-	m_water->GeneratePolarGridMesh(m_deviceResources, 1000, 100, 500);
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
