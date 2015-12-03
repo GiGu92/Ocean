@@ -1,12 +1,16 @@
 #include "pch.h"
 #include "Water.h"
+#include "Camera.h"
 #include "DDSTextureLoader.h"
 
 using namespace Windows::Foundation;
 
 Water::Water() 
 {
-	mesh = std::shared_ptr<GeneratedMesh>(new GeneratedMesh());
+	polarMesh = std::shared_ptr<GeneratedMesh>(new GeneratedMesh());
+	projectedMesh = std::shared_ptr<GeneratedMesh>(new GeneratedMesh());
+
+	currentMesh = polarMesh;
 }
 
 void Water::LoadTextures(
@@ -104,10 +108,36 @@ void Water::CreateConstantBuffers(
 		);
 }
 
-void Water::LoadMesh(
-	std::shared_ptr<DX::DeviceResources> deviceResources)
+void Water::LoadMeshes(
+	std::shared_ptr<DX::DeviceResources> deviceResources,
+	std::shared_ptr<Camera> camera)
 {
-	mesh->GeneratePolarGridMesh(deviceResources, 1000, 100, 500);
+	polarMesh->GeneratePolarGridMesh(deviceResources, 1000, 100, 500);
+	projectedMesh->GenerateProjectedGridMesh(deviceResources, (int)((float)projectedGridHeight * camera->aspectRatio), projectedGridHeight, 2.5f, camera);
+}
+
+void Water::UpdateMeshes(
+	std::shared_ptr<DX::DeviceResources> deviceResources,
+	std::shared_ptr<Camera> camera)
+{
+	if (camera->getPitch() < -XM_PIDIV4)
+	{
+		currentMesh = projectedMesh;
+	}
+	else
+	{
+		currentMesh = polarMesh;
+	}
+
+	if (currentMesh == polarMesh)
+	{
+		XMStoreFloat4x4(&vsConstantBufferData.model, XMMatrixTranspose(XMMatrixTranslation(XMVectorGetX(camera->getEye()), 0, XMVectorGetZ(camera->getEye()))));
+	}
+	else if (currentMesh == projectedMesh)
+	{
+		XMStoreFloat4x4(&vsConstantBufferData.model, XMMatrixTranspose(XMMatrixIdentity()));
+		projectedMesh->GenerateProjectedGridMesh(deviceResources, (int)((float)projectedGridHeight * camera->aspectRatio), projectedGridHeight, 2.5f, camera);
+	}
 }
 
 void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
@@ -136,13 +166,13 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 	context->IASetVertexBuffers(
 		0,
 		1,
-		mesh->vertexBuffer.GetAddressOf(),
+		currentMesh->vertexBuffer.GetAddressOf(),
 		&stride,
 		&offset
 		);
 
 	context->IASetIndexBuffer(
-		mesh->indexBuffer.Get(),
+		currentMesh->indexBuffer.Get(),
 		DXGI_FORMAT_R32_UINT,
 		0
 		);
@@ -186,7 +216,7 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 
 	// Draw the objects.
 	context->DrawIndexed(
-		mesh->indexCount,
+		currentMesh->indexCount,
 		0,
 		0
 		);
