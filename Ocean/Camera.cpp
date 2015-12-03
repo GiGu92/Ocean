@@ -2,6 +2,8 @@
 #include "Camera.h"
 #include "Windows.h"
 
+using namespace Ocean;
+
 Camera::Camera() { };
 
 Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
@@ -18,7 +20,7 @@ Camera::Camera(XMFLOAT4 eye, XMFLOAT4 at, XMFLOAT4 up,
 	XMFLOAT4X4 orientation = deviceResources->GetOrientationTransform3D();
 	this->sceneOrientation = orientation;
 
-	this->movementSpeed = 5.0f;
+	this->movementSpeed = 20.0f;
 	this->movementDir = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
@@ -41,6 +43,20 @@ XMMATRIX Camera::getProjection()
 		farClippingPane);
 
 	return XMMatrixTranspose(perspectiveMatrix * XMLoadFloat4x4(&sceneOrientation));
+}
+
+float Camera::getPitch()
+{
+	XMFLOAT3 dir;
+	XMStoreFloat3(&dir, getDirection());
+	return atan2f(dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
+}
+
+float Camera::getYaw() 
+{ 
+	XMFLOAT3 dir;
+	XMStoreFloat3(&dir, getDirection());
+	return atan2f(dir.z, dir.x) - XM_PI; 
 }
 
 void Camera::ProcessInput(DX::StepTimer const& timer, std::shared_ptr<DX::DeviceResources>& deviceResources)
@@ -92,12 +108,12 @@ void Camera::ProcessInput(DX::StepTimer const& timer, std::shared_ptr<DX::Device
 
 	if (window->GetAsyncKeyState(VirtualKey::Shift) == CoreVirtualKeyStates::Down)
 	{
-		md *= 2;
+		md *= 2.f;
 	}
 
 	if (window->GetAsyncKeyState(VirtualKey::Control) == CoreVirtualKeyStates::Down)
 	{
-		md *= .5;
+		md *= .5f;
 	}
 
 	this->setMovementDir(md);

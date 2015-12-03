@@ -4,6 +4,7 @@
 #include "DDSTextureLoader.h"
 
 using namespace Windows::Foundation;
+using namespace Ocean;
 
 Water::Water() 
 {

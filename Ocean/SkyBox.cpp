@@ -3,6 +3,7 @@
 
 #include "DDSTextureLoader.h"
 
+using namespace Ocean;
 
 SkyBox::SkyBox() { }
 

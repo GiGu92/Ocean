@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "GeneratedMesh.h"
 
+using namespace Ocean;
+
 GeneratedMesh::GeneratedMesh() { }
 
 void GeneratedMesh::GenerateSphereMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int latitudeBands, int longitudeBands, float radius)

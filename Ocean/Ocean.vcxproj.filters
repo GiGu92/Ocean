@@ -126,6 +126,7 @@
   <ItemGroup>
     <None Include="Ocean_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\SkyboxPixelShader.hlsl">

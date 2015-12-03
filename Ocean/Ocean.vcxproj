@@ -240,6 +240,7 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
+    <None Include="ClassDiagram.cd" />
     <None Include="Ocean_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>

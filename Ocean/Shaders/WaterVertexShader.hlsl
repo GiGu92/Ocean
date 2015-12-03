@@ -92,7 +92,6 @@ float CalculateWaveAttenuation(float d, float dmin, float dmax)
 	}
 }
 
-// Simple shader to do vertex processing on the GPU.
 PixelShaderInput main(VertexShaderInput input)
 {
 	PixelShaderInput output;
