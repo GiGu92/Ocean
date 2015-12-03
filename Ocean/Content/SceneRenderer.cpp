@@ -148,7 +148,7 @@ void SceneRenderer::CreateDeviceDependentResources()
 	});
 
 	auto createSkyboxMeshTask = (createSkyboxVSTask && createSkyboxPSTask).then([this]() {
-		m_skybox->GenerateSphereMesh(m_deviceResources, 20, 20, .5f);
+		m_skybox->LoadMesh(m_deviceResources);
 		m_skybox->LoadTextures(m_deviceResources, L"assets/textures/skybox.dds");
 	});
 

@@ -5,7 +5,10 @@
 
 using namespace Ocean;
 
-SkyBox::SkyBox() { }
+SkyBox::SkyBox()
+{ 
+	mesh = std::shared_ptr<GeneratedMesh>(new GeneratedMesh());
+}
 
 void SkyBox::LoadTextures(
 		std::shared_ptr<DX::DeviceResources> deviceResources,
@@ -91,7 +94,14 @@ void SkyBox::CreateConstantBuffers(
 		);
 }
 
-void SkyBox::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
+void SkyBox::LoadMesh(
+	std::shared_ptr<DX::DeviceResources> deviceResources)
+{
+	mesh->GenerateSphereMesh(deviceResources, 20, 20, .5f);
+}
+
+void SkyBox::Draw(
+	std::shared_ptr<DX::DeviceResources> deviceResources)
 {
 
 	auto device = deviceResources->GetD3DDevice();
@@ -110,13 +120,13 @@ void SkyBox::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 	context->IASetVertexBuffers(
 		0,
 		1,
-		vertexBuffer.GetAddressOf(),
+		mesh->vertexBuffer.GetAddressOf(),
 		&stride,
 		&offset
 		);
 
 	context->IASetIndexBuffer(
-		indexBuffer.Get(),
+		mesh->indexBuffer.Get(),
 		DXGI_FORMAT_R32_UINT,
 		0
 		);
@@ -151,7 +161,7 @@ void SkyBox::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 
 	// Draw the objects.
 	context->DrawIndexed(
-		indexCount,
+		mesh->indexCount,
 		0,
 		0
 		);

@@ -3,7 +3,7 @@
 
 namespace Ocean
 {
-	class SkyBox : public GeneratedMesh
+	class SkyBox
 	{
 	public:
 		SkyBox();
@@ -19,6 +19,8 @@ namespace Ocean
 			const std::vector<byte>& psFileData);
 		void CreateConstantBuffers(
 			std::shared_ptr<DX::DeviceResources> deviceResources);
+		void LoadMesh(
+			std::shared_ptr<DX::DeviceResources> deviceResources);
 		void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 
 		~SkyBox();
@@ -26,6 +28,9 @@ namespace Ocean
 		ModelViewProjectionConstantBuffer vsConstantBufferData;
 
 	protected:
+
+		std::shared_ptr<GeneratedMesh> mesh;
+
 		Microsoft::WRL::ComPtr<ID3D11VertexShader>         vertexShader;
 		Microsoft::WRL::ComPtr<ID3D11PixelShader>          pixelShader;
 		Microsoft::WRL::ComPtr<ID3D11Buffer>               vsConstantBuffer;
