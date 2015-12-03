@@ -24,9 +24,9 @@ void SceneRenderer::InitializeScene()
 {
 	m_water = std::shared_ptr<Water>(new Water());
 	XMStoreFloat4x4(&m_water->vsConstantBufferData.model, XMMatrixIdentity());
-	m_water->vsConstantBufferData.lightDir = XMFLOAT4(-.9f, -.34f, -.25f, 1.f);
-	m_water->vsConstantBufferData.lightColor = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	m_water->vsConstantBufferData.uvWaveSpeed = XMFLOAT4(.4f, -.5f, -.7f, .3f);
+	m_water->psConstantBufferData.lightDir = XMFLOAT4(-.9f, -.34f, -.25f, 1.f);
+	m_water->psConstantBufferData.lightColor = XMFLOAT4(1.f, 1.f, 1.f, 1.f);
 	
 	m_skybox = std::shared_ptr<SkyBox>(new SkyBox());
 

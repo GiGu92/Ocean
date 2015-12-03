@@ -24,7 +24,13 @@ public:
 	XMMATRIX getWorld();
 	XMMATRIX getView();
 	XMMATRIX getProjection();
-	inline float getPitch() { return atanf((at.y - eye.y) / (at.x - eye.x)); }
+	//inline float getPitch() { return atanf((at.y - eye.y) / (at.x - eye.x)); }
+	inline float getPitch() 
+	{
+		XMFLOAT3 dir;
+		XMStoreFloat3(&dir, getDirection()); 
+		return atan2f(dir.y, sqrtf(dir.x * dir.x + dir.z * dir.z));
+	}
 	inline float getYaw() { return -0.5f * atanf((at.z - eye.z) / (at.x - eye.x)); }
 	inline float getRoll() { return 0.f; }
 

@@ -12,8 +12,6 @@ cbuffer MyConstantBuffer : register(b0)
 	matrix view;
 	matrix projection;
 	float4 cameraPos;
-	float4 lightDir;
-	float4 lightColor;
 	float4 totalTime;
 	float4 uvWaveSpeed;
 };
@@ -32,12 +30,10 @@ struct VertexShaderInput
 struct PixelShaderInput
 {
 	float4 posPS : SV_Position;
-	float3 posWS : POSITION;
 	float3 normalWS : NORMAL;
 	float2 normalUV1 : TEXCOORD0;
 	float2 normalUV2 : TEXCOORD1;
-	float3 viewTS : VIEWVECTORS;
-	float3 lightTS : LIGHTVECTORS;
+	float3 viewWS : VIEWVECTORS;
 };
 
 float3 CalculateGerstnerOffset(
@@ -120,8 +116,9 @@ PixelShaderInput main(VertexShaderInput input)
 	float4 GDirectionAB2 = float4(0.44, 0.15, -0.35, -0.15);
 	float4 GDirectionCD2 = float4(0.12, 0.78, -0.11, -0.54);
 
-	float distanceToCamera = length(posWS - cameraPos.xyz);
-	float waveAttenuation = 1;
+	float3 viewWS = posWS - cameraPos.xyz;
+	float distanceToCamera = length(viewWS);
+	float waveAttenuation = CalculateWaveAttenuation(distanceToCamera, 400, 500);
 	float3 gerstnerOffset = CalculateGerstnerOffset(
 		posWS.xz, GSteepness, GAmplitude, GFrequency,
 		GSpeed, GDirectionAB, GDirectionCD, totalTime) * waveAttenuation;
@@ -141,7 +138,7 @@ PixelShaderInput main(VertexShaderInput input)
 	float4x4 VP = mul(view, projection);
 
 	output.posPS = mul(float4(posWS, 1), VP);
-	output.posWS = posWS;
+	output.viewWS = viewWS;
 	output.normalWS = normalize(gerstnerNormal + gerstnerNormal2);
 	//output.normalWS = input.normalOS;
 

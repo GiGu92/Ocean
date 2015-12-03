@@ -89,7 +89,7 @@ void Water::LoadPixelShader(
 void Water::CreateConstantBuffers(
 	std::shared_ptr<DX::DeviceResources> deviceResources)
 {
-	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(WaterConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC vsConstantBufferDesc(sizeof(WaterVSConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateBuffer(
 			&vsConstantBufferDesc,
@@ -98,7 +98,7 @@ void Water::CreateConstantBuffers(
 			)
 		);
 
-	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(WaterConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
+	CD3D11_BUFFER_DESC psConstantBufferDesc(sizeof(WaterPSConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
 	DX::ThrowIfFailed(
 		deviceResources->GetD3DDevice()->CreateBuffer(
 			&psConstantBufferDesc,
@@ -206,8 +206,7 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 	context->PSSetConstantBuffers(
 		0,
 		1,
-		//psConstantBuffer.GetAddressOf()
-		vsConstantBuffer.GetAddressOf()
+		psConstantBuffer.GetAddressOf()
 		);
 
 	context->PSSetShaderResources(0, 1, normalTexture.GetAddressOf());

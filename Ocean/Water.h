@@ -37,8 +37,8 @@ public:
 	void Draw(std::shared_ptr<DX::DeviceResources> deviceResources);
 	~Water();
 
-	WaterConstantBuffer                                vsConstantBufferData;
-	WaterConstantBuffer                                psConstantBufferData;
+	WaterVSConstantBuffer                                vsConstantBufferData;
+	WaterPSConstantBuffer                                psConstantBufferData;
 
 protected:
 	MeshMode meshMode = MeshMode::Polar;

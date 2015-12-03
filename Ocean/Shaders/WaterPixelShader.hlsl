@@ -13,25 +13,18 @@ SamplerState samLinear : register(s[0]);
 // A constant buffer.
 cbuffer MyConstantBuffer : register(b0)
 {
-	matrix model;
-	matrix view;
-	matrix projection;
-	float4 cameraPos;
 	float4 lightDir;
 	float4 lightColor;
-	float4 totalTime;
 };
 
 // Per-pixel color data passed through the pixel shader.
 struct PixelShaderInput
 {
 	float4 posPS : SV_Position;
-	float3 posWS : POSITION;
 	float3 normalWS : NORMAL;
 	float2 normalUV1 : TEXCOORD0;
 	float2 normalUV2 : TEXCOORD1;
-	float3 viewTS : VIEWVECTORS;
-	float3 lightTS : LIGHTVECTORS;
+	float3 viewWS : VIEWVECTORS;
 };
 
 
@@ -41,13 +34,13 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float4 color;
 
 	// calculating normal vector
+	float normalMapAttenuation = 0.3f;
 	float3 normalTS1 = normalize(normalMap.Sample(samLinear, input.normalUV1) * 2.0 - 1.0).rgb;
 	float3 normalTS2 = normalize(normalMap.Sample(samLinear, input.normalUV2) * 2.0 - 1.0).rgb;
-	float normalMapAttenuation = 0.3f;
 	float3 normalWS = normalize(input.normalWS + normalize(normalTS1.rbg + normalTS2.rbg) * normalMapAttenuation);
 
 	// calculating reflection color
-	float3 viewWS = normalize(input.posWS - cameraPos.xyz);
+	float3 viewWS = normalize(input.viewWS);
 	float cosa = saturate(dot(-viewWS, normalWS));
 	float3 reflectWS = viewWS;
 	if (cosa > 0)

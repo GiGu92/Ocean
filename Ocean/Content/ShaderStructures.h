@@ -12,16 +12,20 @@ namespace Ocean
 		XMFLOAT4X4 projection;
 	};
 
-	struct WaterConstantBuffer
+	struct WaterVSConstantBuffer
 	{
 		XMFLOAT4X4 model;
 		XMFLOAT4X4 view;
 		XMFLOAT4X4 projection;
 		XMFLOAT4 cameraPos;
-		XMFLOAT4 lightDir;
-		XMFLOAT4 lightColor;
 		XMFLOAT4 totalTime;
 		XMFLOAT4 uvWaveSpeed;
+	};
+
+	struct WaterPSConstantBuffer
+	{
+		XMFLOAT4 lightDir;
+		XMFLOAT4 lightColor;
 	};
 
 
