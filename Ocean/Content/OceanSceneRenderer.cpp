@@ -35,9 +35,6 @@ void OceanSceneRenderer::InitializeScene()
 		XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f),
 		XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f),
 		deviceResources));
-
-	//water->GeneratePolarGridMesh(deviceResources, 1000, 100, 500);
-	water->LoadMeshes(deviceResources, camera);
 }
 
 // Initializes view parameters when the window size changes.
@@ -55,7 +52,7 @@ void OceanSceneRenderer::CreateWindowSizeDependentResources()
 // Called once per frame, rotates the cube and calculates the model and view matrices.
 void OceanSceneRenderer::Update(DX::StepTimer const& timer)
 {
-	ProcessInput();
+	ProcessInput(timer);
 
 	XMVECTOR oldEye = camera->getEye();
 	camera->Update(timer, deviceResources);
@@ -73,7 +70,8 @@ void OceanSceneRenderer::Update(DX::StepTimer const& timer)
 }
 
 // Processes user input
-void OceanSceneRenderer::ProcessInput()
+float timeWhenFKeyPressed = 0.f;
+void OceanSceneRenderer::ProcessInput(DX::StepTimer const& timer)
 {
 	using namespace Windows::UI::Core;
 	using namespace Windows::System;
@@ -81,8 +79,10 @@ void OceanSceneRenderer::ProcessInput()
 	auto window = deviceResources->GetWindow();
 
 	// Keyboard handling
-	if (window->GetAsyncKeyState(VirtualKey::F) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::F) == CoreVirtualKeyStates::Down && 
+		timer.GetTotalSeconds() - timeWhenFKeyPressed > .1f)
 	{
+		timeWhenFKeyPressed = (float)timer.GetTotalSeconds();
 		wireframe = !wireframe;
 	}
 }
@@ -133,7 +133,8 @@ void OceanSceneRenderer::CreateDeviceDependentResources()
 		water->CreateConstantBuffers(deviceResources);
 	});
 
-	auto loadWaterTexturesTask = (createWaterVSTask && createWaterPSTask).then([this] () {
+	auto loadWaterAssetsTask = (createWaterVSTask && createWaterPSTask).then([this] () {
+		water->LoadMeshes(deviceResources, camera);
 		water->LoadTextures(deviceResources, L"assets/textures/water_normal.dds", L"assets/textures/skybox.dds");
 	});
 
@@ -147,13 +148,13 @@ void OceanSceneRenderer::CreateDeviceDependentResources()
 		skybox->LoadPixelShader(deviceResources, fileData);
 	});
 
-	auto createSkyboxMeshTask = (createSkyboxVSTask && createSkyboxPSTask).then([this]() {
+	auto loadSkyboxAssetsTask = (createSkyboxVSTask && createSkyboxPSTask).then([this]() {
 		skybox->LoadMesh(deviceResources);
 		skybox->LoadTextures(deviceResources, L"assets/textures/skybox.dds");
 	});
 
 	// Once the everything is loaded, the scene is ready to be rendered.
-	(loadWaterTexturesTask && createSkyboxMeshTask).then([this] () {
+	(loadWaterAssetsTask && loadSkyboxAssetsTask).then([this] () {
 		loadingComplete = true;
 	});
 }

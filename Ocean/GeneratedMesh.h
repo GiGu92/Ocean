@@ -14,7 +14,6 @@ namespace Ocean
 		void GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float padding, std::shared_ptr<Camera> camera);
 		~GeneratedMesh();
 
-		//protected:
 		Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> vertexBuffer;
 		int indexCount;

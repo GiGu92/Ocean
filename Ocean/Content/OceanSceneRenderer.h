@@ -22,7 +22,7 @@ namespace Ocean
 		void CreateWindowSizeDependentResources();
 		void ReleaseDeviceDependentResources();
 		void Update(DX::StepTimer const& timer);
-		void ProcessInput();
+		void ProcessInput(DX::StepTimer const& timer);
 		void Render();
 
 		bool wireframe = false;

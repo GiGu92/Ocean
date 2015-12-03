@@ -71,47 +71,47 @@ void Camera::ProcessInput(DX::StepTimer const& timer, std::shared_ptr<DX::Device
 	auto window = deviceResources->GetWindow();
 
 	// Keyboard handling
-	if (window->GetAsyncKeyState(VirtualKey::W) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::W) != CoreVirtualKeyStates::None)
 	{
 		md += forward;
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::S) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::S) != CoreVirtualKeyStates::None)
 	{
 		md += -forward;
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::A) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::A) != CoreVirtualKeyStates::None)
 	{
 		md += -right;
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::D) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::D) != CoreVirtualKeyStates::None)
 	{
 		md += right;
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::E) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::E) != CoreVirtualKeyStates::None)
 	{
 		md += this->getUp();
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::Q) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::Q) != CoreVirtualKeyStates::None)
 	{
 		md += -this->getUp();
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::R) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::R) != CoreVirtualKeyStates::None)
 	{
 		eye = defaultEye;
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::Shift) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::Shift) != CoreVirtualKeyStates::None)
 	{
 		md *= 2.f;
 	}
 
-	if (window->GetAsyncKeyState(VirtualKey::Control) == CoreVirtualKeyStates::Down)
+	if (window->GetAsyncKeyState(VirtualKey::Control) != CoreVirtualKeyStates::None)
 	{
 		md *= .5f;
 	}
