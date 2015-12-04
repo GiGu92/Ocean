@@ -114,7 +114,7 @@ void Water::LoadMeshes(
 	std::shared_ptr<Camera> camera)
 {
 	polarMesh->GeneratePolarGridMesh(deviceResources, 1000, 100, 500);
-	projectedMesh->GenerateProjectedGridMesh(deviceResources, (int)((float)projectedGridHeight * camera->aspectRatio), projectedGridHeight, 2.5f, camera);
+	projectedMesh->GenerateProjectedGridMesh(deviceResources, (int)((float)projectedGridHeight * camera->aspectRatio), projectedGridHeight, 7.0f, camera);
 }
 
 void Water::UpdateMeshes(
@@ -137,7 +137,7 @@ void Water::UpdateMeshes(
 	else if (currentMesh == projectedMesh)
 	{
 		XMStoreFloat4x4(&vsConstantBufferData.model, XMMatrixTranspose(XMMatrixIdentity()));
-		projectedMesh->GenerateProjectedGridMesh(deviceResources, (int)((float)projectedGridHeight * camera->aspectRatio), projectedGridHeight, 2.5f, camera);
+		projectedMesh->GenerateProjectedGridMesh(deviceResources, (int)((float)projectedGridHeight * camera->aspectRatio), projectedGridHeight, 7.0f, camera);
 	}
 }
 

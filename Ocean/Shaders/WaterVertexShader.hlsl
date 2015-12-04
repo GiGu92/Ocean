@@ -97,21 +97,21 @@ PixelShaderInput main(VertexShaderInput input)
 	PixelShaderInput output;
 	float4 posOS = float4(input.posOS, 1.0f);
 	float3 posWS = mul(posOS, model).xyz;
-	output.normalUV1 = posWS.xz * .05f + uvWaveSpeed.xy * totalTime.x * .025f;
-	output.normalUV2 = posWS.xz * .05f + uvWaveSpeed.zw * totalTime.x * .025f;
+	output.normalUV1 = posWS.xz * .05f + uvWaveSpeed.xy * totalTime.x * .025;
+	output.normalUV2 = posWS.xz * .05f + uvWaveSpeed.zw * totalTime.x * .025 + float2(.5, .5);
 	
 	float GIntensity = 1.0f;
-	float4 GAmplitude = float4(0.14, 0.26, 0.175, 0.225);
-	float4 GFrequency = float4(0.5, 0.38, 0.59, 0.6);
-	float4 GSteepness = float4(7.0, 2.0, 6.0, 2.0);
-	float4 GSpeed = float4(-3.0, 2.0, 1.0, 3.0);
+	float4 GAmplitude = float4(0.48, 0.72, 0.55, 0.65);
+	float4 GFrequency = float4(0.15, 0.12, 0.2, 0.15);
+	float4 GSteepness = float4(5.0, 1.7, 4.5, 1.4);
+	float4 GSpeed = float4(-1.0, 0.7, 0.3, 1.0);
 	float4 GDirectionAB = float4(0.47, 0.35, -0.2, 0.1);
 	float4 GDirectionCD = float4(0.7, -0.68, 0.71, -0.2);
 	float GIntensity2 = 1.0f;
-	float4 GAmplitude2 = float4(0.054, 0.065, 0.034, 0.015);
-	float4 GFrequency2 = float4(1.5, 1.9, 1.2, 0.8);
-	float4 GSteepness2 = float4(3.0, 4.0, 5.0, 6.0);
-	float4 GSpeed2 = float4(1.0, 1.5, 0.5, 2.0);
+	float4 GAmplitude2 = float4(0.25, 0.30, 0.19, 0.15);
+	float4 GFrequency2 = float4(0.75, 0.9, 0.6, 0.4);
+	float4 GSteepness2 = float4(2.0, 3.0, 4.0, 5.0);
+	float4 GSpeed2 = float4(0.5, 0.7, 0.25, 1.0);
 	float4 GDirectionAB2 = float4(0.44, 0.15, -0.35, -0.15);
 	float4 GDirectionCD2 = float4(0.12, 0.78, -0.11, -0.54);
 

@@ -43,7 +43,7 @@ namespace Ocean
 
 	protected:
 		MeshMode meshMode = MeshMode::Polar;
-		int projectedGridHeight = 50;
+		int projectedGridHeight = 60;
 		std::shared_ptr<GeneratedMesh> polarMesh;
 		std::shared_ptr<GeneratedMesh> projectedMesh;
 		std::shared_ptr<GeneratedMesh> currentMesh;
