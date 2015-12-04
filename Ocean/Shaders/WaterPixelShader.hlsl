@@ -7,6 +7,7 @@
 
 Texture2D normalMap : register(t[0]);
 TextureCube environmentMap : register(t[1]);
+Texture2D foamMap : register(t[2]);
 
 SamplerState samLinear : register(s[0]);
 
@@ -21,12 +22,21 @@ cbuffer MyConstantBuffer : register(b0)
 struct PixelShaderInput
 {
 	float4 posPS : SV_Position;
+	float3 posWS : POSITION;
 	float3 normalWS : NORMAL;
 	float2 normalUV1 : TEXCOORD0;
 	float2 normalUV2 : TEXCOORD1;
 	float3 viewWS : VIEWVECTORS;
 };
 
+float GetFoamIntensity(float waveHeight, float minHeight, float maxHeight)
+{
+	if (waveHeight < minHeight) return 0.f;
+	else
+	{
+		return saturate((1.0 / ((minHeight - maxHeight)*(minHeight - maxHeight))) * ((waveHeight - minHeight) * (waveHeight - minHeight)));
+	}
+}
 
 // A pass-through function for the (interpolated) color data.
 float4 main(PixelShaderInput input) : SV_TARGET
@@ -64,6 +74,13 @@ float4 main(PixelShaderInput input) : SV_TARGET
 
 	// interpolating final color between reflected and refracted color
 	color = lerp(refraction, reflection, fresnel) + specular;
+
+	// calculating foam
+	float4 foamColor1 = foamMap.Sample(samLinear, input.normalUV1);
+	float4 foamColor2 = foamMap.Sample(samLinear, input.normalUV2);
+	float4 foamColor = ((foamColor1 + foamColor2) / 2.0).rgbr;
+	float foamIntensity = GetFoamIntensity(input.posWS.y, 1.2, 3);
+	color += foamIntensity * foamColor;
 
 	return color;
 }

@@ -17,13 +17,15 @@ Water::Water()
 void Water::LoadTextures(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
 	const wchar_t* normalTextureFile,
-	const wchar_t* environmentTextureFile)
+	const wchar_t* environmentTextureFile,
+	const wchar_t* foamTextureFile)
 {
 	auto device = deviceResources->GetD3DDevice();
 
 	// Load textures
 	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, environmentTextureFile, nullptr, environmentTexture.ReleaseAndGetAddressOf()));
 	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, normalTextureFile, nullptr, normalTexture.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, foamTextureFile, nullptr, foamTexture.ReleaseAndGetAddressOf()));
 	
 	// Create samplers
 	D3D11_SAMPLER_DESC sampDesc;
@@ -212,6 +214,7 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 
 	context->PSSetShaderResources(0, 1, normalTexture.GetAddressOf());
 	context->PSSetShaderResources(1, 1, environmentTexture.GetAddressOf());
+	context->PSSetShaderResources(2, 1, foamTexture.GetAddressOf());
 	context->PSSetSamplers(0, 1, linearSampler.GetAddressOf());
 
 	// Draw the objects.
@@ -231,5 +234,6 @@ Water::~Water()
 	inputLayout.Reset();
 	environmentTexture.Reset();
 	normalTexture.Reset();
+	foamTexture.Reset();
 	linearSampler.Reset();
 }

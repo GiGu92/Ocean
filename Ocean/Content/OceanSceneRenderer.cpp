@@ -135,7 +135,10 @@ void OceanSceneRenderer::CreateDeviceDependentResources()
 
 	auto loadWaterAssetsTask = (createWaterVSTask && createWaterPSTask).then([this] () {
 		water->LoadMeshes(deviceResources, camera);
-		water->LoadTextures(deviceResources, L"assets/textures/water_normal.dds", L"assets/textures/skybox.dds");
+		water->LoadTextures(deviceResources, 
+			L"assets/textures/water_normal.dds", 
+			L"assets/textures/skybox.dds",
+			L"assets/textures/water_foam.dds");
 	});
 
 

@@ -30,6 +30,7 @@ struct VertexShaderInput
 struct PixelShaderInput
 {
 	float4 posPS : SV_Position;
+	float3 posWS : POSITION;
 	float3 normalWS : NORMAL;
 	float2 normalUV1 : TEXCOORD0;
 	float2 normalUV2 : TEXCOORD1;
@@ -137,6 +138,7 @@ PixelShaderInput main(VertexShaderInput input)
 	float4x4 VP = mul(view, projection);
 
 	output.posPS = mul(float4(posWS, 1), VP);
+	output.posWS = posWS;
 	output.viewWS = viewWS;
 	output.normalWS = normalize(gerstnerNormal + gerstnerNormal2);
 	//output.normalWS = input.normalOS;

@@ -20,7 +20,8 @@ namespace Ocean
 		void LoadTextures(
 			std::shared_ptr<DX::DeviceResources> deviceResources,
 			const wchar_t* normalTextureFile,
-			const wchar_t* environmentTextureFile);
+			const wchar_t* environmentTextureFile,
+			const wchar_t* foamTextureFile);
 		void LoadVertexShader(
 			std::shared_ptr<DX::DeviceResources> deviceResources,
 			const std::vector<byte>& vsFileData);
@@ -55,6 +56,7 @@ namespace Ocean
 		Microsoft::WRL::ComPtr<ID3D11InputLayout>          inputLayout;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   environmentTexture;
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   normalTexture;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>   foamTexture;
 		Microsoft::WRL::ComPtr<ID3D11SamplerState>         linearSampler;
 
 	};
