@@ -11,7 +11,7 @@ namespace Ocean
 		void GenerateSphereMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int latitudeBands, int longitudeBands, float radius);
 		void GenerateSimpleGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float stride);
 		void GeneratePolarGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int rads, int angs, float radius);
-		void GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float padding, std::shared_ptr<Camera> camera);
+		void GenerateProjectedGridMesh(std::shared_ptr<DX::DeviceResources> deviceResources, int width, int height, float bias, std::shared_ptr<Camera> camera);
 		~GeneratedMesh();
 
 		Microsoft::WRL::ComPtr<ID3D11Buffer> indexBuffer;

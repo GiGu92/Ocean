@@ -115,7 +115,7 @@ void Skybox::Draw(
 		0,
 		0);
 
-	UINT stride = sizeof(VertexPositionNormalTextureTangentBinormal);
+	UINT stride = sizeof(VertexPositionNormal);
 	UINT offset = 0;
 	context->IASetVertexBuffers(
 		0,

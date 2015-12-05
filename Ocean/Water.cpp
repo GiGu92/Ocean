@@ -16,7 +16,8 @@ Water::Water()
 
 void Water::LoadTextures(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
-	const wchar_t* normalTextureFile,
+	const wchar_t* normalTextureFile1,
+	const wchar_t* normalTextureFile2,
 	const wchar_t* environmentTextureFile,
 	const wchar_t* foamTextureFile)
 {
@@ -24,7 +25,8 @@ void Water::LoadTextures(
 
 	// Load textures
 	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, environmentTextureFile, nullptr, environmentTexture.ReleaseAndGetAddressOf()));
-	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, normalTextureFile, nullptr, normalTexture.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, normalTextureFile1, nullptr, normalTexture1.ReleaseAndGetAddressOf()));
+	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, normalTextureFile2, nullptr, normalTexture2.ReleaseAndGetAddressOf()));
 	DX::ThrowIfFailed(DirectX::CreateDDSTextureFromFile(device, foamTextureFile, nullptr, foamTexture.ReleaseAndGetAddressOf()));
 	
 	// Create samplers
@@ -85,6 +87,20 @@ void Water::LoadPixelShader(
 			psFileData.size(),
 			nullptr,
 			&pixelShader
+			)
+		);
+}
+
+void Water::LoadWireFramePixelShader(
+	std::shared_ptr<DX::DeviceResources> deviceResources,
+	const std::vector<byte>& wfpsFileData)
+{
+	DX::ThrowIfFailed(
+		deviceResources->GetD3DDevice()->CreatePixelShader(
+			&wfpsFileData[0],
+			wfpsFileData.size(),
+			nullptr,
+			&wireFramePixelShader
 			)
 		);
 }
@@ -164,7 +180,7 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 		0,
 		0);
 
-	UINT stride = sizeof(VertexPositionNormalTextureTangentBinormal);
+	UINT stride = sizeof(VertexPositionNormal);
 	UINT offset = 0;
 	context->IASetVertexBuffers(
 		0,
@@ -198,24 +214,37 @@ void Water::Draw(std::shared_ptr<DX::DeviceResources> deviceResources)
 		vsConstantBuffer.GetAddressOf()
 		);
 
-	// Attach our pixel shader.
-	context->PSSetShader(
-		pixelShader.Get(),
-		nullptr,
-		0
-		);
+	if (wireframe)
+	{
+		// Attach our pixel shader.
+		context->PSSetShader(
+			wireFramePixelShader.Get(),
+			nullptr,
+			0
+			);
+	}
+	else
+	{
+		// Attach our pixel shader.
+		context->PSSetShader(
+			pixelShader.Get(),
+			nullptr,
+			0
+			);
 
-	// Send the constant buffer to the graphics device.
-	context->PSSetConstantBuffers(
-		0,
-		1,
-		psConstantBuffer.GetAddressOf()
-		);
+		// Send the constant buffer to the graphics device.
+		context->PSSetConstantBuffers(
+			0,
+			1,
+			psConstantBuffer.GetAddressOf()
+			);
 
-	context->PSSetShaderResources(0, 1, normalTexture.GetAddressOf());
-	context->PSSetShaderResources(1, 1, environmentTexture.GetAddressOf());
-	context->PSSetShaderResources(2, 1, foamTexture.GetAddressOf());
-	context->PSSetSamplers(0, 1, linearSampler.GetAddressOf());
+		context->PSSetShaderResources(0, 1, normalTexture1.GetAddressOf());
+		context->PSSetShaderResources(1, 1, normalTexture1.GetAddressOf());
+		context->PSSetShaderResources(2, 1, environmentTexture.GetAddressOf());
+		context->PSSetShaderResources(3, 1, foamTexture.GetAddressOf());
+		context->PSSetSamplers(0, 1, linearSampler.GetAddressOf());
+	}
 
 	// Draw the objects.
 	context->DrawIndexed(
@@ -233,7 +262,8 @@ Water::~Water()
 	psConstantBuffer.Reset();
 	inputLayout.Reset();
 	environmentTexture.Reset();
-	normalTexture.Reset();
+	normalTexture1.Reset();
+	normalTexture2.Reset();
 	foamTexture.Reset();
 	linearSampler.Reset();
 }

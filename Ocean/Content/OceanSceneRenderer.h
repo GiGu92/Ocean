@@ -25,8 +25,6 @@ namespace Ocean
 		void ProcessInput(DX::StepTimer const& timer);
 		void Render();
 
-		bool wireframe = false;
-
 	private:
 		// Cached pointer to device resources.
 		std::shared_ptr<DX::DeviceResources> deviceResources;

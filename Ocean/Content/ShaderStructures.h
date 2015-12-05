@@ -36,6 +36,12 @@ namespace Ocean
 		XMFLOAT3 color;
 	};
 
+	struct VertexPositionNormal
+	{
+		XMFLOAT3 position;
+		XMFLOAT3 normal;
+	};
+
 	struct VertexPositionNormalTextureTangentBinormal
 	{
 		XMFLOAT3 position;

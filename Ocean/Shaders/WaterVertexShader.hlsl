@@ -1,11 +1,5 @@
-//// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-//// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-//// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//// PARTICULAR PURPOSE.
-////
-//// Copyright (c) Microsoft Corporation. All rights reserved
-
-// A constant buffer that stores the three basic column-major matrices for composing geometry.
+// A constant buffer that stores the three basic column-major matrices 
+// and additional sccene information for composing geometry.
 cbuffer MyConstantBuffer : register(b0)
 {
 	matrix model;
@@ -21,9 +15,6 @@ struct VertexShaderInput
 {
 	float3 posOS : SV_Position;
 	float3 normalOS : NORMAL;
-	float2 texCoord : TEXCOORD;
-	float3 tangentOS : TANGENT;
-	float3 binormalOS : BINORMAL;
 };
 
 // Per-pixel color data passed through the pixel shader.
@@ -38,48 +29,48 @@ struct PixelShaderInput
 };
 
 float3 CalculateGerstnerOffset(
-	float2 xzVtx, float4 steepness, float4 amp, float4 freq,
+	float2 xzPos, float4 steepness, float4 amp, float4 freq,
 	float4 speed, float4 dirAB, float4 dirCD, float4 time)
 {
-	float3 offsets;
+	float3 offset;
 
 	float4 AB = steepness.xxyy * amp.xxyy * dirAB.xyzw;
 	float4 CD = steepness.zzww * amp.zzww * dirCD.xyzw;
 
-	float4 dotABCD = freq.xyzw * float4(dot(dirAB.xy, xzVtx), dot(dirAB.zw, xzVtx), dot(dirCD.xy, xzVtx), dot(dirCD.zw, xzVtx));
-	float4 TIME = time.yyyy * speed;
+	float4 dotABCD = freq.xyzw * float4(dot(dirAB.xy, xzPos), dot(dirAB.zw, xzPos), dot(dirCD.xy, xzPos), dot(dirCD.zw, xzPos));
+	float4 TIME = time * speed;
 
 	float4 COS = cos(dotABCD + TIME);
 	float4 SIN = sin(dotABCD + TIME);
 
-	offsets.x = dot(COS, float4(AB.xz, CD.xz));
-	offsets.z = dot(COS, float4(AB.yw, CD.yw));
-	offsets.y = dot(SIN, amp);
+	offset.x = dot(COS, float4(AB.xz, CD.xz));
+	offset.z = dot(COS, float4(AB.yw, CD.yw));
+	offset.y = dot(SIN, amp);
 
-	return offsets;
+	return offset;
 }
 
 float3 CalculateGerstnerNormal(
-	float2 xzVtx, float intensity, float4 amp, float4 freq,
+	float2 xzPos, float intensity, float4 amp, float4 freq,
 	float4 speed, float4 dirAB, float4 dirCD, float4 time)
 {
-	float3 nrml = float3(0, 2.0, 0);
+	float3 normal = float3(0, 2.0, 0);
 
 	float4 AB = freq.xxyy * amp.xxyy * dirAB.xyzw;
 	float4 CD = freq.zzww * amp.zzww * dirCD.xyzw;
 
-	float4 dotABCD = freq.xyzw * float4(dot(dirAB.xy, xzVtx), dot(dirAB.zw, xzVtx), dot(dirCD.xy, xzVtx), dot(dirCD.zw, xzVtx));
-	float4 TIME = time.yyyy * speed;
+	float4 dotABCD = freq.xyzw * float4(dot(dirAB.xy, xzPos), dot(dirAB.zw, xzPos), dot(dirCD.xy, xzPos), dot(dirCD.zw, xzPos));
+	float4 TIME = time * speed;
 
 	float4 COS = cos(dotABCD + TIME);
 
-	nrml.x -= dot(COS, float4(AB.xz, CD.xz));
-	nrml.z -= dot(COS, float4(AB.yw, CD.yw));
+	normal.x -= dot(COS, float4(AB.xz, CD.xz));
+	normal.z -= dot(COS, float4(AB.yw, CD.yw));
 
-	nrml.xz *= intensity;
-	nrml = normalize(nrml);
+	normal.xz *= intensity;
+	normal = normalize(normal);
 
-	return nrml;
+	return normal;
 }
 
 float CalculateWaveAttenuation(float d, float dmin, float dmax)
@@ -96,10 +87,10 @@ float CalculateWaveAttenuation(float d, float dmin, float dmax)
 PixelShaderInput main(VertexShaderInput input)
 {
 	PixelShaderInput output;
-	float4 posOS = float4(input.posOS, 1.0f);
+	float4 posOS = float4(input.posOS, 1.0);
 	float3 posWS = mul(posOS, model).xyz;
-	output.normalUV1 = posWS.xz * .05f + uvWaveSpeed.xy * totalTime.x * .025;
-	output.normalUV2 = posWS.xz * .05f + uvWaveSpeed.zw * totalTime.x * .025 + float2(.5, .5);
+	output.normalUV1 = posWS.xz * .05 + uvWaveSpeed.xy * totalTime.x * .025;
+	output.normalUV2 = posWS.xz * .05 + uvWaveSpeed.zw * totalTime.x * .025 + float2(.5, .5);
 	
 	float GIntensity = 1.0f;
 	float4 GAmplitude = float4(0.48, 0.72, 0.55, 0.65);

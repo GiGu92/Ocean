@@ -59,7 +59,6 @@ void OceanSceneRenderer::Update(DX::StepTimer const& timer)
 
 	water->UpdateMeshes(deviceResources, camera);
 
-	//XMStoreFloat4x4(&water->vsConstantBufferData.model, XMMatrixTranspose(XMMatrixTranslation(XMVectorGetX(camera->getEye()), 0, XMVectorGetZ(camera->getEye()))));
 	XMStoreFloat4x4(&water->vsConstantBufferData.view, camera->getView());
 	XMStoreFloat4(&water->vsConstantBufferData.cameraPos, camera->getEye());
 	float totalTime = (float)timer.GetTotalSeconds();
@@ -83,7 +82,7 @@ void OceanSceneRenderer::ProcessInput(DX::StepTimer const& timer)
 		timer.GetTotalSeconds() - timeWhenFKeyPressed > .1f)
 	{
 		timeWhenFKeyPressed = (float)timer.GetTotalSeconds();
-		wireframe = !wireframe;
+		water->wireframe = !water->wireframe;
 	}
 }
 
@@ -105,7 +104,7 @@ void OceanSceneRenderer::Render()
 	context->RSSetState(states->CullClockwise());
 	skybox->Draw(deviceResources);
 	
-	if (wireframe)
+	if (water->wireframe)
 		context->RSSetState(states->Wireframe());
 	else
 		context->RSSetState(states->CullCounterClockwise());
@@ -121,6 +120,7 @@ void OceanSceneRenderer::CreateDeviceDependentResources()
 
 	auto loadWaterVSTask = DX::ReadDataAsync(L"WaterVertexShader.cso");
 	auto loadWaterPSTask = DX::ReadDataAsync(L"WaterPixelShader.cso");
+	auto loadWaterWFPSTask = DX::ReadDataAsync(L"SolidColorPixelShader.cso");
 	auto loadSkyboxVSTask = DX::ReadDataAsync(L"SkyboxVertexShader.cso");
 	auto loadSkyboxPSTask = DX::ReadDataAsync(L"SkyboxPixelShader.cso");
 
@@ -133,10 +133,15 @@ void OceanSceneRenderer::CreateDeviceDependentResources()
 		water->CreateConstantBuffers(deviceResources);
 	});
 
-	auto loadWaterAssetsTask = (createWaterVSTask && createWaterPSTask).then([this] () {
+	auto createWaterWFPSTask = loadWaterWFPSTask.then([this](const std::vector<byte>& fileData) {
+		water->LoadWireFramePixelShader(deviceResources, fileData);
+	});
+
+	auto loadWaterAssetsTask = (createWaterVSTask && createWaterPSTask && createWaterWFPSTask).then([this] () {
 		water->LoadMeshes(deviceResources, camera);
 		water->LoadTextures(deviceResources, 
-			L"assets/textures/water_normal.dds", 
+			L"assets/textures/water_normal.dds",
+			L"assets/textures/water_normal.dds",
 			L"assets/textures/skybox.dds",
 			L"assets/textures/water_foam.dds");
 	});
