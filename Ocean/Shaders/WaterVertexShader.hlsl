@@ -109,7 +109,7 @@ PixelShaderInput main(VertexShaderInput input)
 
 	float3 viewWS = posWS - cameraPos.xyz;
 	float distanceToCamera = length(viewWS);
-	float waveAttenuation = CalculateWaveAttenuation(distanceToCamera, 400, 500);
+	float waveAttenuation = CalculateWaveAttenuation(distanceToCamera, 400, 1000);
 	float3 gerstnerOffset = CalculateGerstnerOffset(
 		posWS.xz, GSteepness, GAmplitude, GFrequency,
 		GSpeed, GDirectionAB, GDirectionCD, totalTime) * waveAttenuation;

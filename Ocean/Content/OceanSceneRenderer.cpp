@@ -64,7 +64,7 @@ void OceanSceneRenderer::Update(DX::StepTimer const& timer)
 	float totalTime = (float)timer.GetTotalSeconds();
 	water->vsConstantBufferData.totalTime = XMFLOAT4(totalTime, totalTime, totalTime, totalTime);
 	
-	XMStoreFloat4x4(&skybox->vsConstantBufferData.model, XMMatrixTranspose(XMMatrixScaling(500.f, 500.f, 500.f) * XMMatrixTranslationFromVector(camera->getEye())));
+	XMStoreFloat4x4(&skybox->vsConstantBufferData.model, XMMatrixTranspose(XMMatrixScaling(1000.f, 1000.f, 1000.f) * XMMatrixTranslationFromVector(camera->getEye())));
 	XMStoreFloat4x4(&skybox->vsConstantBufferData.view, camera->getView());
 }
 

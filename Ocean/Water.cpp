@@ -131,7 +131,7 @@ void Water::LoadMeshes(
 	std::shared_ptr<DX::DeviceResources> deviceResources,
 	std::shared_ptr<Camera> camera)
 {
-	polarMesh->GeneratePolarGridMesh(deviceResources, 1000, 100, 500);
+	polarMesh->GeneratePolarGridMesh(deviceResources, 500, 100, 500);
 	projectedMesh->GenerateProjectedGridMesh(deviceResources, (int)((float)projectedGridHeight * camera->aspectRatio), projectedGridHeight, 7.0f, camera);
 }
 

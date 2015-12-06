@@ -87,6 +87,7 @@ float4 main(PixelShaderInput input) : SV_TARGET
 	float4 foamColor1 = foamMap.Sample(samLinear, input.normalUV1);
 	float4 foamColor2 = foamMap.Sample(samLinear, input.normalUV2);
 	float4 foamColor = ((foamColor1 + foamColor2) / 2.0).rgbr;
+	foamColor.a = saturate(foamColor.a * 2);
 	foamColor = lerp(color, foamColor, foamColor.a);
 	float foamIntensity = GetFoamIntensity(input.posWS.y, .8, 1.6);
 	color = lerp(color, foamColor, foamIntensity);
