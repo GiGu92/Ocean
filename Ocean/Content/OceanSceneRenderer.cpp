@@ -110,7 +110,6 @@ void OceanSceneRenderer::Render()
 		context->RSSetState(states->CullCounterClockwise());
 
 	context->OMSetBlendState(states->AlphaBlend(), nullptr, 0xFFFFFFFF);
-	context->OMSetDepthStencilState(states->DepthRead(), 0);
 	water->Draw(deviceResources);
 }
 
